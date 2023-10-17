@@ -879,7 +879,7 @@ func (s *snapshot) resetActivePackagesLocked() {
 const fileExtensions = "go,mod,sum,work"
 
 func (s *snapshot) fileWatchingGlobPatterns(ctx context.Context) map[string]struct{} {
-	extensions := fileExtensions + gopExtensions() // goxls: Go+
+	extensions := fileExtensions + "," + gopExtensions() // goxls: Go+
 	for _, ext := range s.View().Options().TemplateExtensions {
 		extensions += "," + ext
 	}
