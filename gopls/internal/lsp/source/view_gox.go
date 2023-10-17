@@ -4,11 +4,7 @@
 
 package source
 
-/*
 import (
-	"context"
-	"fmt"
-
 	"github.com/goplus/gop/ast"
 	"github.com/goplus/gop/parser"
 	"github.com/goplus/gop/scanner"
@@ -62,6 +58,7 @@ func (pgf *ParsedGopFile) NodeRange(node ast.Node) (protocol.Range, error) {
 	return pgf.Mapper.NodeRange(pgf.Tok, node)
 }
 
+/*
 // NarrowestPackageForGopFile is a convenience function that selects the
 // narrowest non-ITV package to which this file belongs, type-checks
 // it in the requested mode (full or workspace), and returns it, along

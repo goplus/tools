@@ -129,6 +129,7 @@ type parseKey struct {
 	uri             span.URI
 	mode            parser.Mode
 	purgeFuncBodies bool
+	gopFile         bool // goxls: cache a Go+ file
 }
 
 type parseCacheEntry struct {

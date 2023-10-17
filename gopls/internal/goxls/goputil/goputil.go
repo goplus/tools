@@ -21,3 +21,7 @@ func FileKind(fext string) Kind {
 	}
 	return FileUnknown
 }
+
+func Exts() string {
+	return "gop,spx,rdx,gox,gmx"
+}

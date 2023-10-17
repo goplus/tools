@@ -18,6 +18,8 @@ import (
 	"go/types"
 	"io"
 
+	goxparser "github.com/goplus/gop/parser"
+
 	"golang.org/x/mod/modfile"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/packages"
@@ -92,6 +94,12 @@ type Snapshot interface {
 	// If the file is not available, returns nil and an error.
 	// Position information is added to FileSet().
 	ParseGo(ctx context.Context, fh FileHandle, mode parser.Mode) (*ParsedGoFile, error)
+
+	// ParseGop returns the parsed AST for the file.
+	// If the file is not available, returns nil and an error.
+	// Position information is added to FileSet().
+	// goxls: parse Go+ files
+	ParseGop(ctx context.Context, fh FileHandle, mode goxparser.Mode) (*ParsedGopFile, error)
 
 	// Analyze runs the specified analyzers on the given packages at this snapshot.
 	//
@@ -842,6 +850,8 @@ const (
 	Tmpl
 	// Work is a go.work file.
 	Work
+	// goxls: Gop is a Go+ file.
+	Gop
 )
 
 func (k FileKind) String() string {
@@ -856,6 +866,8 @@ func (k FileKind) String() string {
 		return "tmpl"
 	case Work:
 		return "go.work"
+	case Gop: // goxls: Gop is a Go+ file
+		return "gop"
 	default:
 		return fmt.Sprintf("internal error: unknown file kind %d", k)
 	}

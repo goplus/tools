@@ -30,7 +30,7 @@ func (s *Server) codeLens(ctx context.Context, params *protocol.CodeLensParams) 
 	switch snapshot.View().FileKind(fh) {
 	case source.Mod:
 		lenses = mod.LensFuncs()
-	case source.Go:
+	case source.Go, source.Gop: // goxls: Go+
 		lenses = source.LensFuncs()
 	default:
 		// Unsupported file kind for a code lens.

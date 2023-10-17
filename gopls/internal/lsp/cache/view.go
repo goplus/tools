@@ -430,6 +430,10 @@ func (v *View) FileKind(fh source.FileHandle) source.FileKind {
 		return source.Sum
 	case ".work":
 		return source.Work
+	default:
+		if checkGopFile(fh, fext) { // goxls: check Go+ file
+			return source.Gop
+		}
 	}
 	exts := v.Options().TemplateExtensions
 	for _, ext := range exts {

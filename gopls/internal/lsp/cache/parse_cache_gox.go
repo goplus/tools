@@ -4,7 +4,6 @@
 
 package cache
 
-/*
 import (
 	"bytes"
 	"container/heap"
@@ -149,7 +148,7 @@ func (c *parseCache) startParseGop(mode parser.Mode, purgeFuncBodies bool, fhs .
 // given fset should only be used in other APIs if its base is >=
 // reservedForParsing.
 //
-// If parseFiles returns an error, it still returns a slice,
+// If parseGopFiles returns an error, it still returns a slice,
 // but with a nil entry for each file that could not be parsed.
 func (c *parseCache) parseGopFiles(ctx context.Context, fset *token.FileSet, mode parser.Mode, purgeFuncBodies bool, fhs ...source.FileHandle) ([]*source.ParsedGopFile, error) {
 	pgfs := make([]*source.ParsedGopFile, len(fhs))
@@ -206,4 +205,3 @@ func (c *parseCache) parseGopFiles(ctx context.Context, fset *token.FileSet, mod
 
 	return pgfs, firstErr
 }
-*/

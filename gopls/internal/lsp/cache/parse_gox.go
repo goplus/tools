@@ -4,7 +4,6 @@
 
 package cache
 
-/*
 import (
 	"context"
 	"fmt"
@@ -147,8 +146,11 @@ func ParseGopSrc(ctx context.Context, fset *token.FileSet, uri span.URI, src []b
 
 // fixGopAST inspects the AST and potentially modifies any *ast.BadStmts so that it can be
 // type-checked more effectively.
+//
+// If fixGopAST returns true, the resulting AST is considered "fixed", meaning
+// positions have been mangled, and type checker errors may not make sense.
 func fixGopAST(n ast.Node, tok *token.File, src []byte) (fixes []fixType) {
-	return nil
+	return
 }
 
 // fixGopSrc attempts to modify the file's source code to fix certain
@@ -156,6 +158,5 @@ func fixGopAST(n ast.Node, tok *token.File, src []byte) (fixes []fixType) {
 //
 // fixSrc returns a non-nil result if and only if a fix was applied.
 func fixGopSrc(f *ast.File, tf *token.File, src []byte) (newSrc []byte, fix fixType) {
-	return nil, noFix
+	return
 }
-*/
