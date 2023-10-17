@@ -5,6 +5,7 @@
 package proxy
 
 import (
+	"context"
 	"io"
 	"log"
 	"os"
@@ -18,13 +19,17 @@ func Main(gopls, goxls string, args ...string) {
 		version(gopls, args)
 		return
 	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer func() {
+		cancel()
+	}()
 
 	home, err := os.UserHomeDir()
 	check(err)
 
 	goplsDir := home + "/.gopls/"
 	rotateDir := goplsDir + strconv.FormatInt(time.Now().UnixMicro(), 36)
-	if _, e := os.Lstat(goplsDir + gopls + ".in"); e == nil {
+	if _, e := os.Lstat(goplsDir + "gopls.in"); e == nil {
 		err = os.MkdirAll(rotateDir, 0755)
 		check(err)
 	}
@@ -55,7 +60,7 @@ func Main(gopls, goxls string, args ...string) {
 		pwGox = pw
 
 		go func() {
-			cmd := exec.Command(goxls, args...)
+			cmd := exec.CommandContext(ctx, goxls, args...)
 			cmd.Stdin = pr
 			cmd.Stdout = goxoutf
 			cmd.Stderr = os.Stderr
@@ -78,7 +83,7 @@ func Main(gopls, goxls string, args ...string) {
 		}
 	}()
 
-	cmd := exec.Command(gopls, args...)
+	cmd := exec.CommandContext(ctx, gopls, args...)
 	cmd.Stdin = pr
 	cmd.Stdout = io.MultiWriter(os.Stdout, stdoutf)
 	cmd.Stderr = os.Stderr

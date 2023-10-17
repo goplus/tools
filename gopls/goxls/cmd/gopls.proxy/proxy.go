@@ -16,5 +16,5 @@ const (
 )
 
 func main() {
-	proxy.Main(gopls, goxls, os.Args[1:]...)
+	proxy.Main(goxls, gopls, os.Args[1:]...)
 }
