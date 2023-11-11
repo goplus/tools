@@ -2,8 +2,8 @@ github.com/goplus/gop v1.1.4-0.20231108162743-f7d3dd0a78fa h1:3FmqyloUluf3S4MOe2
 github.com/goplus/gop v1.1.4-0.20231108162743-f7d3dd0a78fa/go.mod h1:tW65hh1cEHwHkpLUhSMKtw3ndVKwvZ7Rghm0IntrBck=
 github.com/goplus/gox v1.12.2-0.20231103090303-19b970256b0e h1:l1a+oX9m3xWuHWXVGRpnNo+/vag8qR8DQ933euQlS6w=
 github.com/goplus/gox v1.12.2-0.20231103090303-19b970256b0e/go.mod h1:MOJnwqA8/rSUkn0vsayHFK7TD/3XQrdexMTqdzR70X0=
-github.com/goplus/mod v0.11.9-0.20231109071516-10181f604669 h1:qVQwTKRmA94owOCGDvR7um4VmCw5b6LJWAvFkifA9f0=
-github.com/goplus/mod v0.11.9-0.20231109071516-10181f604669/go.mod h1:YxrBMhvWGcvLU14j8e7qyKSVnj5Loba7GgH1rNXJtDg=
+github.com/goplus/mod v0.11.9 h1:XdWvSNi55fQ3KHnk0PVVHsXynG58lTbfXps/C9HjTVQ=
+github.com/goplus/mod v0.11.9/go.mod h1:YxrBMhvWGcvLU14j8e7qyKSVnj5Loba7GgH1rNXJtDg=
 github.com/qiniu/x v1.13.1 h1:hi7tkXFq6BWGbBpMoLV7kvA2elop69j6Kl7TlxnFAiU=
 github.com/qiniu/x v1.13.1/go.mod h1:INZ2TSWSJVWO/RuELQROERcslBwVgFG7MkTfEdaQz9E=
 github.com/yuin/goldmark v1.4.13 h1:fVcFKWvrslecOb/tg+Cc05dkeYx540o0FuFt3nUVDoE=
