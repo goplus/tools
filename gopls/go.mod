@@ -9,7 +9,7 @@ require (
 	github.com/jba/printsrc v0.2.2
 	github.com/jba/templatecheck v0.6.0
 	github.com/qiniu/x v1.13.1
-	github.com/sergi/go-diff v1.1.0
+	github.com/sergi/go-diff v1.3.1
 	golang.org/x/mod v0.14.0
 	golang.org/x/sync v0.5.0
 	golang.org/x/sys v0.14.0
