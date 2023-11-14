@@ -286,7 +286,6 @@ func gopRefactorRewrite(ctx context.Context, snapshot source.Snapshot, pkg sourc
 	if snapshot.View().Options().IsAnalyzerEnabled(fillstruct.Analyzer.Name) {
 		for _, d := range fillstruct.GopDiagnoseFillableStructs(inspect, start, end, pkg.GetTypes(), pkg.GopTypesInfo()) {
 			rng, err := pgf.Mapper.PosRange(pgf.Tok, d.Pos, d.End)
-			log.Println("!!!!!!!!!!!!!!!!!!!!!!!!!Gox NewApplyFixCommand,rng:", rng, "pgf.URI:", pgf.URI)
 
 			if err != nil {
 				return nil, err
