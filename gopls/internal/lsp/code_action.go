@@ -461,6 +461,8 @@ func refactorRewrite(ctx context.Context, snapshot source.Snapshot, pkg source.P
 	if snapshot.View().Options().IsAnalyzerEnabled(fillstruct.Analyzer.Name) {
 		for _, d := range fillstruct.DiagnoseFillableStructs(inspect, start, end, pkg.GetTypes(), pkg.GetTypesInfo()) {
 			rng, err := pgf.Mapper.PosRange(pgf.Tok, d.Pos, d.End)
+			log.Println("!!!!!!!!!!!!!!!!!!!!!!!!!NewApplyFixCommand,rng:", rng, "pgf.URI:", pgf.URI)
+
 			if err != nil {
 				return nil, err
 			}

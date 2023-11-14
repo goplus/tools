@@ -30,6 +30,8 @@ import (
 func GopDiagnoseFillableStructs(inspect *inspector.Inspector, start, end token.Pos, pkg *types.Package, info *typesutil.Info) []analysis.Diagnostic {
 	var diags []analysis.Diagnostic
 	nodeFilter := []ast.Node{(*ast.CompositeLit)(nil)}
+	typesutil.SetDebug(typesutil.DbgFlagAll)
+
 	inspect.Preorder(nodeFilter, func(n ast.Node) {
 		expr := n.(*ast.CompositeLit)
 
@@ -37,7 +39,13 @@ func GopDiagnoseFillableStructs(inspect *inspector.Inspector, start, end token.P
 			return // non-overlapping
 		}
 
-		typ := info.TypeOf(expr)
+		compositeType := expr.Type
+		if compositeType == nil {
+			return
+		}
+
+		compositeTypeStr := fmt.Sprintf("%s", compositeType)
+		typ := pkg.Scope().Lookup(compositeTypeStr).Type()
 		if typ == nil {
 			return
 		}
@@ -127,9 +135,14 @@ func GopSuggestedFix(fset *token.FileSet, start, end token.Pos, content []byte, 
 		}
 	}
 
-	typ := info.TypeOf(expr)
-	if typ == nil {
+	if expr == nil {
 		return nil, fmt.Errorf("no composite literal")
+	}
+
+	exprStr := fmt.Sprintf("%s", expr.Type)
+	typ := pkg.Scope().Lookup(exprStr).Type()
+	if typ == nil {
+		return nil, fmt.Errorf("composite literal type error")
 	}
 
 	// Find reference to the type declaration of the struct being initialized.
