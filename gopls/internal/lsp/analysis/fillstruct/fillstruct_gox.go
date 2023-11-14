@@ -30,7 +30,6 @@ import (
 func GopDiagnoseFillableStructs(inspect *inspector.Inspector, start, end token.Pos, pkg *types.Package, info *typesutil.Info) []analysis.Diagnostic {
 	var diags []analysis.Diagnostic
 	nodeFilter := []ast.Node{(*ast.CompositeLit)(nil)}
-	typesutil.SetDebug(typesutil.DbgFlagAll)
 
 	inspect.Preorder(nodeFilter, func(n ast.Node) {
 		expr := n.(*ast.CompositeLit)
