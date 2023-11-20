@@ -82,6 +82,50 @@ func gopForEachLexicalRef(pkg Package, obj types.Object, fn func(id *ast.Ident, 
 	return ok
 }
 
+// isLocal reports whether obj is local to some function.
+// Precondition: not a struct field or interface method.
+func isGopLocal(obj types.Object) bool {
+	var depth int
+	for scope := obj.Parent(); scope != nil; scope = scope.Parent() {
+		depth++
+	}
+	return depth >= 3
+}
+
+func isGopPackageLevel(obj types.Object) bool {
+	if obj == nil {
+		return false
+	}
+	// goxls: fast version
+	return obj.Pkg().Scope().Lookup(obj.Name()) == obj
+}
+
+// check performs safety checks of the renaming of the 'from' object to r.to.
+func (r *renamer) gopCheck(from types.Object) {
+	if r.objsToUpdate[from] {
+		return
+	}
+	r.objsToUpdate[from] = true
+
+	// NB: order of conditions is important.
+	if from_, ok := from.(*types.PkgName); ok {
+		r.checkInFileBlock(from_)
+	} else if from_, ok := from.(*types.Label); ok {
+		r.checkLabel(from_)
+	} else if isGopPackageLevel(from) {
+		r.checkInPackageBlock(from)
+	} else if v, ok := from.(*types.Var); ok && v.IsField() {
+		r.checkStructField(v)
+	} else if f, ok := from.(*types.Func); ok && recv(f) != nil {
+		r.checkMethod(f)
+	} else if isGopLocal(from) {
+		r.checkInLexicalScope(from)
+	} else {
+		r.errorf(from.Pos(), "unexpected %s object %q (please report a bug)\n",
+			objectKind(from), from)
+	}
+}
+
 func (r *renamer) gopCheckExport(id *ast.Ident, pkg *types.Package, from types.Object) bool {
 	// Reject cross-package references if r.to is unexported.
 	// (Such references may be qualified identifiers or field/method
