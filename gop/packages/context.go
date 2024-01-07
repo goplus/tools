@@ -6,12 +6,10 @@ package packages
 
 import (
 	"go/types"
-	"os"
 	"path/filepath"
 	"sync"
 
 	"github.com/goplus/mod/gopmod"
-	"github.com/qiniu/x/errors"
 	"golang.org/x/tools/go/packages"
 )
 
@@ -52,7 +50,6 @@ func (p *Context) LoadModFrom(gomod string) (ret *gopmod.Module, err error) {
 		return ret, nil
 	}
 	if ret, err = loadModFrom(gomod); err == nil {
-		ret.ImportClasses()
 		p.mutex.Lock()
 		p.mods[gomod] = ret
 		p.mutex.Unlock()
@@ -69,13 +66,8 @@ func loadModFrom(gomod string) (ret *gopmod.Module, err error) {
 }
 
 func doLoadModFrom(gomod string) (ret *gopmod.Module, err error) {
-	if dir, file := filepath.Split(gomod); file == "go.mod" {
-		ret, err = gopmod.LoadFrom(dir + "gop.mod")
-		if err == nil || !os.IsNotExist(errors.Err(err)) {
-			return
-		}
-	}
-	return gopmod.LoadFrom(gomod)
+	dir, _ := filepath.Split(gomod)
+	return gopmod.LoadFrom(gomod, dir+"gop.mod")
 }
 
 // LoadMod loads a Go+ module.

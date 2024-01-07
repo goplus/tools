@@ -36,36 +36,37 @@ func gopIndex(
 				// Report a reference for each identifier that
 				// uses a symbol exported from another package.
 				// (The built-in error.Error method has no package.)
-				if n.IsExported() {
-					if obj, ok := info.Uses[n]; ok &&
-						obj.Pkg() != nil &&
-						obj.Pkg() != pkg {
+				//if n.IsExported() {
+				if obj, ok := info.Uses[n]; ok &&
+					obj.Exported() && // gox obj.Exported replace ident.IsExported
+					obj.Pkg() != nil &&
+					obj.Pkg() != pkg {
 
-						// For instantiations of generic methods,
-						// use the generic object (see issue #60622).
-						if fn, ok := obj.(*types.Func); ok {
-							obj = typeparams.OriginMethod(fn)
-						}
-
-						objects := getObjects(obj.Pkg())
-						gobObj, ok := objects[obj]
-						if !ok {
-							path, err := objectpathFor(obj)
-							if err != nil {
-								// Capitalized but not exported
-								// (e.g. local const/var/type).
-								return true
-							}
-							gobObj = &gobObject{Path: path}
-							objects[obj] = gobObj
-						}
-
-						gobObj.GopRefs = append(gobObj.GopRefs, gobRef{
-							FileIndex: fileIndex,
-							Range:     nodeRange(n),
-						})
+					// For instantiations of generic methods,
+					// use the generic object (see issue #60622).
+					if fn, ok := obj.(*types.Func); ok {
+						obj = typeparams.OriginMethod(fn)
 					}
+
+					objects := getObjects(obj.Pkg())
+					gobObj, ok := objects[obj]
+					if !ok {
+						path, err := objectpathFor(obj)
+						if err != nil {
+							// Capitalized but not exported
+							// (e.g. local const/var/type).
+							return true
+						}
+						gobObj = &gobObject{Path: path}
+						objects[obj] = gobObj
+					}
+
+					gobObj.GopRefs = append(gobObj.GopRefs, gobRef{
+						FileIndex: fileIndex,
+						Range:     nodeRange(n),
+					})
 				}
+				//}
 
 			case *ast.ImportSpec:
 				// Report a reference from each import path

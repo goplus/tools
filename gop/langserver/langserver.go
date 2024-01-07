@@ -6,6 +6,10 @@ package langserver
 
 import (
 	"context"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/goplus/gop/x/langserver"
@@ -35,9 +39,30 @@ var (
 	onceInit sync.Once
 )
 
+func lookupCmd(cmd string) string {
+	if bin, err := exec.LookPath(cmd); err == nil {
+		return bin
+	}
+	if gobin := os.Getenv("GOBIN"); gobin != "" {
+		if bin, err := exec.LookPath(filepath.Join(gobin, cmd)); err == nil {
+			return bin
+		}
+	}
+	if data, err := exec.Command("go", "env", "GOPATH").Output(); err == nil {
+		gopath := strings.TrimSpace(string(data))
+		for _, path := range filepath.SplitList(gopath) {
+			if bin, err := exec.LookPath(filepath.Join(path, "bin", cmd)); err == nil {
+				return bin
+			}
+		}
+	}
+	return cmd
+}
+
 func Get() langserver.Client {
 	onceInit.Do(func() {
-		ls = langserver.ServeAndDial(nil, "gop", "serve", "-v")
+		cmd := lookupCmd("gop")
+		ls = langserver.ServeAndDial(nil, cmd, "serve", "-v")
 	})
 	return ls
 }
