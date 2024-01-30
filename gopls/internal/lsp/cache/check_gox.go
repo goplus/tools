@@ -24,6 +24,7 @@ func newGopTypeInfo() *typesutil.Info {
 		Selections: make(map[*ast.SelectorExpr]*types.Selection),
 		Scopes:     make(map[ast.Node]*types.Scope),
 		Instances:  make(map[*ast.Ident]types.Instance),
+		Overloads:  make(map[*ast.Ident][]types.Object),
 	}
 }
 

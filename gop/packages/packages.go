@@ -424,6 +424,7 @@ func addGopFiles(ret *Package, ld *loader, dir string, mode LoadMode, test bool)
 				Scopes:     make(map[ast.Node]*types.Scope),
 				Selections: make(map[*ast.SelectorExpr]*types.Selection),
 				Instances:  make(map[*ast.Ident]types.Instance),
+				Overloads:  make(map[*ast.Ident][]types.Object),
 			}
 			cfg := &types.Config{
 				Context: ctx.Types,

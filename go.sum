@@ -1,9 +1,15 @@
 github.com/goplus/gop v1.1.4-0.20240127064445-8cff85327aad h1:O/TQiXkt4meswpfXjf/uqm4rv5MsP+9/9XxZ2bZUM+Y=
 github.com/goplus/gop v1.1.4-0.20240127064445-8cff85327aad/go.mod h1:7PbWa7LPv2wwJ+aCu7mTbccR9kI0SyfSt5yR79tSKMk=
+github.com/goplus/gop v1.2.0-pre.1.0.20240130114658-b73767587629 h1:QIWAqEuo5luFBb4LtmtzR1wKSXsfFaQX/lo82mgXJJs=
+github.com/goplus/gop v1.2.0-pre.1.0.20240130114658-b73767587629/go.mod h1:xu8MYnHh5/IY5GXeWvYWTYUZAUZ+h0+opQNyOyuKBmg=
 github.com/goplus/gox v1.14.0 h1:QYhgtBUyFvByaD8FbHx/5r2RsDw/tgT6tKEqIwtcJFk=
 github.com/goplus/gox v1.14.0/go.mod h1:G7Hz+cAOUyJyN9pPHrpqhfQPDUtiJNmoRVTwoaQ9nw0=
+github.com/goplus/gox v1.14.1-0.20240130100601-34b84d88ef29 h1:Sv0zFjy7HzYQMShOY8dZfL/5O+MrKboQamRouM2w6l0=
+github.com/goplus/gox v1.14.1-0.20240130100601-34b84d88ef29/go.mod h1:G7Hz+cAOUyJyN9pPHrpqhfQPDUtiJNmoRVTwoaQ9nw0=
 github.com/goplus/mod v0.12.2 h1:5RHUdmXT5jlzOFUAfrx/5uSk4RTphFPFcCbRUt/AIBo=
 github.com/goplus/mod v0.12.2/go.mod h1:ZtlS9wHOcAVxZ/zq7WLdKVes1HG/8Yn3KNuWZGcpeTs=
+github.com/goplus/mod v0.12.3 h1:qLU5/F27CzUTQhCQRN1WruiCepUn5GdLKQTB41OsYfk=
+github.com/goplus/mod v0.12.3/go.mod h1:ZtlS9wHOcAVxZ/zq7WLdKVes1HG/8Yn3KNuWZGcpeTs=
 github.com/qiniu/x v1.13.2 h1:mgWOfB9Rpk6AEtlBoObZVxH+b2FHSntYrxc4KX5Ta98=
 github.com/qiniu/x v1.13.2/go.mod h1:INZ2TSWSJVWO/RuELQROERcslBwVgFG7MkTfEdaQz9E=
 github.com/yuin/goldmark v1.4.13 h1:fVcFKWvrslecOb/tg+Cc05dkeYx540o0FuFt3nUVDoE=

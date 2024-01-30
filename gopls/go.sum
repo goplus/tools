@@ -14,10 +14,16 @@ github.com/google/safehtml v0.1.0/go.mod h1:L4KWwDsUJdECRAEpZoBn3O64bQaywRscowZj
 github.com/goplus/c2go v0.7.20/go.mod h1:hToieb5V4BMY3c431DQ7DEg13JQ+q9qGmls4+GgymrA=
 github.com/goplus/gop v1.1.4-0.20240127064445-8cff85327aad h1:O/TQiXkt4meswpfXjf/uqm4rv5MsP+9/9XxZ2bZUM+Y=
 github.com/goplus/gop v1.1.4-0.20240127064445-8cff85327aad/go.mod h1:7PbWa7LPv2wwJ+aCu7mTbccR9kI0SyfSt5yR79tSKMk=
+github.com/goplus/gop v1.2.0-pre.1.0.20240130114658-b73767587629 h1:QIWAqEuo5luFBb4LtmtzR1wKSXsfFaQX/lo82mgXJJs=
+github.com/goplus/gop v1.2.0-pre.1.0.20240130114658-b73767587629/go.mod h1:xu8MYnHh5/IY5GXeWvYWTYUZAUZ+h0+opQNyOyuKBmg=
 github.com/goplus/gox v1.14.0 h1:QYhgtBUyFvByaD8FbHx/5r2RsDw/tgT6tKEqIwtcJFk=
 github.com/goplus/gox v1.14.0/go.mod h1:G7Hz+cAOUyJyN9pPHrpqhfQPDUtiJNmoRVTwoaQ9nw0=
+github.com/goplus/gox v1.14.1-0.20240130100601-34b84d88ef29 h1:Sv0zFjy7HzYQMShOY8dZfL/5O+MrKboQamRouM2w6l0=
+github.com/goplus/gox v1.14.1-0.20240130100601-34b84d88ef29/go.mod h1:G7Hz+cAOUyJyN9pPHrpqhfQPDUtiJNmoRVTwoaQ9nw0=
 github.com/goplus/mod v0.12.2 h1:5RHUdmXT5jlzOFUAfrx/5uSk4RTphFPFcCbRUt/AIBo=
 github.com/goplus/mod v0.12.2/go.mod h1:ZtlS9wHOcAVxZ/zq7WLdKVes1HG/8Yn3KNuWZGcpeTs=
+github.com/goplus/mod v0.12.3 h1:qLU5/F27CzUTQhCQRN1WruiCepUn5GdLKQTB41OsYfk=
+github.com/goplus/mod v0.12.3/go.mod h1:ZtlS9wHOcAVxZ/zq7WLdKVes1HG/8Yn3KNuWZGcpeTs=
 github.com/jba/printsrc v0.2.2 h1:9OHK51UT+/iMAEBlQIIXW04qvKyF3/vvLuwW/hL8tDU=
 github.com/jba/printsrc v0.2.2/go.mod h1:1xULjw59sL0dPdWpDoVU06TIEO/Wnfv6AHRpiElTwYM=
 github.com/jba/templatecheck v0.7.0 h1:wjTb/VhGgSFeim5zjWVePBdaMo28X74bGLSABZV+zIA=
