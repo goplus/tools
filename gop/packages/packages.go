@@ -15,13 +15,13 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/goplus/gop"
 	"github.com/goplus/gop/ast"
 	"github.com/goplus/gop/parser"
 	"github.com/goplus/gop/scanner"
 	"github.com/goplus/gop/token"
 	"github.com/goplus/gop/x/typesutil"
 	"github.com/goplus/mod/gopmod"
-
 	"golang.org/x/tools/go/packages"
 	"golang.org/x/tools/gop/goputil"
 	"golang.org/x/tools/internal/gop/packagesinternal"
@@ -391,6 +391,8 @@ func addGopFiles(ret *Package, ld *loader, dir string, mode LoadMode, test bool)
 	}
 	fsetTemp := token.NewFileSet()
 	pkgName := ret.Name
+	var mod *gopmod.Module
+	var once sync.Once
 	for _, e := range entries {
 		fname := e.Name()
 		if strings.HasPrefix(fname, "_") {
@@ -400,8 +402,21 @@ func addGopFiles(ret *Package, ld *loader, dir string, mode LoadMode, test bool)
 		if goputil.FileKind(fext) == goputil.FileUnknown {
 			continue
 		}
-		if !test && strings.HasSuffix(fname[:len(fname)-len(fext)], "_test") {
-			continue
+		if !test {
+			if strings.HasSuffix(fname[:len(fname)-len(fext)], "_test") {
+				continue
+			}
+			// check gox class test
+			if strings.HasSuffix(fname, "test.gox") {
+				once.Do(func() {
+					mod, _ = gop.LoadMod(dir)
+				})
+				if mod != nil {
+					if _, ok := mod.ClassKind(fname); ok {
+						continue
+					}
+				}
+			}
 		}
 		file := dir + fname
 		f, err := parser.ParseFile(fsetTemp, file, nil, parser.PackageClauseOnly)
@@ -424,6 +439,7 @@ func addGopFiles(ret *Package, ld *loader, dir string, mode LoadMode, test bool)
 				Scopes:     make(map[ast.Node]*types.Scope),
 				Selections: make(map[*ast.SelectorExpr]*types.Selection),
 				Instances:  make(map[*ast.Ident]types.Instance),
+				Overloads:  make(map[*ast.Ident][]types.Object),
 			}
 			cfg := &types.Config{
 				Context: ctx.Types,

@@ -5,12 +5,10 @@
 package cache
 
 import (
-	goast "go/ast"
 	"go/types"
 
 	"github.com/goplus/gop/ast"
 	"github.com/goplus/gop/x/typesutil"
-	"golang.org/x/tools/gopls/internal/lsp/source"
 )
 
 func newGopTypeInfo() *typesutil.Info {
@@ -22,13 +20,22 @@ func newGopTypeInfo() *typesutil.Info {
 		Selections: make(map[*ast.SelectorExpr]*types.Selection),
 		Scopes:     make(map[ast.Node]*types.Scope),
 		Instances:  make(map[*ast.Ident]types.Instance),
+		Overloads:  make(map[*ast.Ident][]types.Object),
 	}
 }
 
-func checkFiles(check *typesutil.Checker, goFiles []*goast.File, compiledGopFiles []*source.ParsedGopFile) error {
-	gopFiles := make([]*ast.File, 0, len(compiledGopFiles))
-	for _, cgf := range compiledGopFiles {
-		gopFiles = append(gopFiles, cgf.File)
+type gopImporter struct {
+	imp types.Importer
+	gop types.Importer
+}
+
+func (p *gopImporter) Import(path string) (*types.Package, error) {
+	if pkg, err := p.imp.Import(path); err == nil {
+		return pkg, nil
 	}
-	return check.Files(goFiles, gopFiles)
+	return p.gop.Import(path)
+}
+
+func newGopImporter(imp, gop types.Importer) types.Importer {
+	return &gopImporter{imp, gop}
 }

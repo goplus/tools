@@ -397,6 +397,9 @@ func (r *renamer) gopUpdate(result map[span.URI][]diff.Edit) (map[span.URI][]dif
 	}
 	var items []item
 	info := r.pkg.GopTypesInfo()
+	if info == nil {
+		return result, nil
+	}
 	for id, obj := range info.Uses {
 		if shouldUpdate(obj) {
 			items = append(items, item{id, obj, false})

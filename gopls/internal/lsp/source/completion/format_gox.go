@@ -5,6 +5,7 @@
 package completion
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"go/doc"
@@ -12,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/goplus/gop/ast"
+	"github.com/goplus/gox"
 	"golang.org/x/tools/gopls/internal/lsp/protocol"
 	"golang.org/x/tools/gopls/internal/lsp/safetoken"
 	"golang.org/x/tools/gopls/internal/lsp/snippet"
@@ -117,7 +119,7 @@ func (c *gopCompleter) item(ctx context.Context, cand candidate) (CompletionItem
 			prefix = "<-" + prefix
 		}
 	}
-
+	var isOverload bool
 	var (
 		suffix   string
 		funcType = obj.Type()
@@ -136,6 +138,25 @@ Suffixes:
 					funcType = sig.Results().At(0).Type()
 				}
 				detail = "func" + s.Format()
+				if _, objs := gox.CheckSigFuncExObjects(sig); len(objs) > 0 {
+					isOverload = true
+					var buf bytes.Buffer
+					buf.WriteString("Go+ overload funcs\n")
+					for _, o := range objs {
+						if isIndexOverload(o.Name(), obj.Name()) {
+							c.seen[o] = true
+						}
+						s, err := source.NewSignature(ctx, c.snapshot, c.pkg, o.Type().(*types.Signature), nil, c.qf, c.mq)
+						if err != nil {
+							return CompletionItem{}, err
+						}
+						buf.WriteString("\n- func" + s.Format())
+					}
+					if showGopStyle {
+						label = fmt.Sprintf("%-30v (Go+ overload)", label)
+					}
+					detail = buf.String()
+				}
 			}
 
 			if !c.opts.snippets {
@@ -223,6 +244,7 @@ Suffixes:
 		Depth:               len(cand.path),
 		snippet:             &snip,
 		isSlice:             isSlice(obj),
+		isOverload:          isOverload,
 	}
 	// If the user doesn't want documentation for completion items.
 	if !c.opts.documentation {
@@ -258,6 +280,17 @@ Suffixes:
 	}
 
 	return item, nil
+}
+
+func isIndexOverload(fn string, name string) bool {
+	n := len(name)
+	if (len(fn) == n+3) && (fn[:n] == name) && (fn[n] == '_') && (fn[n+1] == '_') {
+		c := fn[n+2]
+		if (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *gopCompleter) formatBuiltin(ctx context.Context, cand candidate) (CompletionItem, error) {

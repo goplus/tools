@@ -27,8 +27,17 @@ func (s *Server) signatureHelp(ctx context.Context, params *protocol.SignatureHe
 		activeParameter int
 	)
 	switch kind := snapshot.View().FileKind(fh); kind {
-	case source.Gop: // goxls: Go+
-		info, activeParameter, err = source.GopSignatureHelp(ctx, snapshot, fh, params.Position)
+	case source.Gop: // goxls: Go+ overloads
+		infos, activeSignature, activeParameter, err := source.GopSignatureHelp(ctx, snapshot, fh, params.Position)
+		if err != nil {
+			event.Error(ctx, "no signature help", err, tag.Position.Of(params.Position))
+			return nil, nil // sic? There could be many reasons for failure.
+		}
+		return &protocol.SignatureHelp{
+			Signatures:      infos,
+			ActiveSignature: uint32(activeSignature),
+			ActiveParameter: uint32(activeParameter),
+		}, nil
 	case source.Go:
 		info, activeParameter, err = source.SignatureHelp(ctx, snapshot, fh, params.Position)
 	default:

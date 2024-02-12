@@ -31,6 +31,7 @@ import (
 	"strings"
 	_ "unsafe"
 
+	"golang.org/x/tools/gop/xtypes"
 	"golang.org/x/tools/internal/typeparams"
 )
 
@@ -555,6 +556,25 @@ func find(obj types.Object, T types.Type, path []byte, seen map[*types.TypeName]
 			return r
 		}
 		return nil
+
+	case xtypes.OverloadType: // goxls: Go+ extended types
+		for i := 0; i < T.Len(); i++ {
+			v := T.At(i)
+			path2 := appendOpArg(path, opAt, i)
+			if v == obj {
+				return path2 // found param/result var
+			}
+			if r := find(obj, v.Type(), append(path2, opType), seen); r != nil {
+				return r
+			}
+		}
+		return nil
+	case xtypes.SubstType: // goxls: Go+ extended types
+		o := T.Obj()
+		if o == obj {
+			return append(path, opObj)
+		}
+		return find(obj, o.Type(), append(path, opType), seen)
 	}
 	panic(T)
 }

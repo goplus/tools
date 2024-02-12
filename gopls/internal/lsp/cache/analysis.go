@@ -1061,15 +1061,17 @@ func (an *analysisNode) typeCheck(parsed []*source.ParsedGoFile, gopParsed []*so
 	// TODO(adonovan): do we actually need this??
 	typesinternal.SetUsesCgo(cfg)
 
-	// goxls: use Go+
-	// check := types.NewChecker(cfg, pkg.fset, pkg.types, pkg.typesInfo)
-	opts := &typesutil.Config{Types: pkg.types, Fset: pkg.fset, Mod: m.GopMod_()}
-	check := typesutil.NewChecker(cfg, opts, pkg.typesInfo, pkg.gopTypesInfo)
-
 	// Type checking errors are handled via the config, so ignore them here.
 	// goxls: use Go+
-	// _ = check.Files(pkg.files)
-	_ = check.Files(pkg.files, pkg.gopFiles)
+	if len(pkg.gopFiles) > 0 {
+		cfg.Importer = newGopImporter(cfg.Importer, m.GopImporter(pkg.fset))
+		opts := &typesutil.Config{Types: pkg.types, Fset: pkg.fset, Mod: m.GopMod_()}
+		check := typesutil.NewChecker(cfg, opts, pkg.typesInfo, pkg.gopTypesInfo)
+		_ = check.Files(pkg.files, pkg.gopFiles)
+	} else {
+		check := types.NewChecker(cfg, pkg.fset, pkg.types, pkg.typesInfo)
+		_ = check.Files(pkg.files)
+	}
 
 	// debugging (type errors are quite normal)
 	if false {

@@ -9,6 +9,7 @@ import (
 	"go/token"
 
 	"github.com/goplus/gop/ast"
+	"github.com/goplus/mod/gopmod"
 	"golang.org/x/tools/gop/goputil"
 	"golang.org/x/tools/gopls/internal/bug"
 	"golang.org/x/tools/gopls/internal/goxls/parserutil"
@@ -48,10 +49,22 @@ func gopMetadataChanges(ctx context.Context, lockedSnapshot *snapshot, oldFH, ne
 		return false, false, false
 	}
 
+	// check locked snapshot mod for uri
+	ids := lockedSnapshot.meta.ids[oldFH.URI()]
+	var mod *gopmod.Module
+	for _, id := range ids {
+		if m := lockedSnapshot.meta.metadata[id]; m != nil {
+			mod = m.GopMod_()
+			if mod != nil {
+				break
+			}
+		}
+	}
+
 	fset := token.NewFileSet()
 	// Parse headers to compare package names and imports.
-	oldHeads, oldErr := lockedSnapshot.view.parseCache.parseGopFiles(ctx, fset, parserutil.ParseHeader, false, oldFH)
-	newHeads, newErr := lockedSnapshot.view.parseCache.parseGopFiles(ctx, fset, parserutil.ParseHeader, false, newFH)
+	oldHeads, oldErr := lockedSnapshot.view.parseCache.parseGopFiles(ctx, mod, fset, parserutil.ParseHeader, false, oldFH)
+	newHeads, newErr := lockedSnapshot.view.parseCache.parseGopFiles(ctx, mod, fset, parserutil.ParseHeader, false, newFH)
 
 	if oldErr != nil || newErr != nil {
 		// TODO(rfindley): we can get here if newFH does not exist. There is
@@ -102,8 +115,8 @@ func gopMetadataChanges(ctx context.Context, lockedSnapshot *snapshot, oldFH, ne
 	// Note: if this affects performance we can probably avoid parsing in the
 	// common case by first scanning the source for potential comments.
 	if !invalidate {
-		origFulls, oldErr := lockedSnapshot.view.parseCache.parseGopFiles(ctx, fset, parserutil.ParseFull, false, oldFH)
-		newFulls, newErr := lockedSnapshot.view.parseCache.parseGopFiles(ctx, fset, parserutil.ParseFull, false, newFH)
+		origFulls, oldErr := lockedSnapshot.view.parseCache.parseGopFiles(ctx, mod, fset, parserutil.ParseFull, false, oldFH)
+		newFulls, newErr := lockedSnapshot.view.parseCache.parseGopFiles(ctx, mod, fset, parserutil.ParseFull, false, newFH)
 		if oldErr == nil && newErr == nil {
 			invalidate = gopMagicCommentsChanged(origFulls[0].File, newFulls[0].File)
 		} else {

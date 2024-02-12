@@ -16,6 +16,7 @@ import (
 	"github.com/goplus/gop/parser"
 	"github.com/goplus/gop/scanner"
 	"github.com/goplus/gop/token"
+	"github.com/goplus/mod/gopmod"
 	"github.com/qiniu/x/log"
 	"golang.org/x/tools/gopls/internal/goxls/parserutil"
 	"golang.org/x/tools/gopls/internal/lsp/protocol"
@@ -29,15 +30,30 @@ import (
 // ParseGop parses the file whose contents are provided by fh, using a cache.
 // The resulting tree may have beeen fixed up.
 func (s *snapshot) ParseGop(ctx context.Context, fh source.FileHandle, mode parser.Mode) (*source.ParsedGopFile, error) {
-	pgfs, err := s.view.parseCache.parseGopFiles(ctx, token.NewFileSet(), mode, false, fh)
+	mod, err := s.GopModForFile(ctx, fh.URI())
+	if err != nil {
+		return nil, err
+	}
+	pgfs, err := s.view.parseCache.parseGopFiles(ctx, mod, token.NewFileSet(), mode, false, fh)
 	if err != nil {
 		return nil, err
 	}
 	return pgfs[0], nil
 }
 
+func (s *snapshot) GopModForFile(ctx context.Context, uri span.URI) (*gopmod.Module, error) {
+	m, err := s.MetadataForFile(ctx, uri)
+	if err != nil {
+		return nil, err
+	}
+	if len(m) == 0 {
+		return gopmod.Default, nil
+	}
+	return m[0].GopMod_(), nil
+}
+
 // parseGopImpl parses the Go+ source file whose content is provided by fh.
-func parseGopImpl(ctx context.Context, fset *token.FileSet, fh source.FileHandle, mode parser.Mode, purgeFuncBodies bool) (*source.ParsedGopFile, error) {
+func parseGopImpl(ctx context.Context, mod *gopmod.Module, fset *token.FileSet, fh source.FileHandle, mode parser.Mode, purgeFuncBodies bool) (*source.ParsedGopFile, error) {
 	/*
 		// goxls: don't check Go+ files by extension
 		ext := filepath.Ext(fh.URI().Filename())
@@ -53,14 +69,14 @@ func parseGopImpl(ctx context.Context, fset *token.FileSet, fh source.FileHandle
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
-	pgf, _ := ParseGopSrc(ctx, fset, fh.URI(), content, mode, purgeFuncBodies)
+	pgf, _ := ParseGopSrc(ctx, mod, fset, fh.URI(), content, mode, purgeFuncBodies)
 	return pgf, nil
 }
 
 // ParseGopSrc parses a buffer of Go+ source, repairing the tree if necessary.
 //
 // The provided ctx is used only for logging.
-func ParseGopSrc(ctx context.Context, fset *token.FileSet, uri span.URI, src []byte, mode parser.Mode, purgeFuncBodies bool) (res *source.ParsedGopFile, fixes []fixType) {
+func ParseGopSrc(ctx context.Context, mod *gopmod.Module, fset *token.FileSet, uri span.URI, src []byte, mode parser.Mode, purgeFuncBodies bool) (res *source.ParsedGopFile, fixes []fixType) {
 	if purgeFuncBodies {
 		src = goplsastutil.PurgeFuncBodies(src)
 	}
@@ -73,7 +89,7 @@ func ParseGopSrc(ctx context.Context, fset *token.FileSet, uri span.URI, src []b
 		log.SingleStack()
 	}
 
-	file, err := parserutil.ParseFile(fset, uri.Filename(), src, mode)
+	file, err := parserutil.ParseFileEx(mod, fset, uri.Filename(), src, mode)
 	var parseErr scanner.ErrorList
 	if err != nil {
 		// We passed a byte slice, so the only possible error is a parse error.
@@ -115,7 +131,7 @@ func ParseGopSrc(ctx context.Context, fset *token.FileSet, uri span.URI, src []b
 				event.Log(ctx, fmt.Sprintf("fixGopSrc loop - last diff:\n%v", unified), tag.File.Of(tok.Name()))
 			}
 
-			newFile, newErr := parserutil.ParseFile(fset, uri.Filename(), newSrc, mode)
+			newFile, newErr := parserutil.ParseFileEx(mod, fset, uri.Filename(), newSrc, mode)
 			if newFile == nil {
 				break // no progress
 			}

@@ -6,11 +6,18 @@ package completion
 
 import (
 	"context"
+	"fmt"
 	"go/types"
+	"strings"
 	"time"
 
 	"github.com/qiniu/x/log"
 	"golang.org/x/tools/gopls/internal/goxls"
+	"golang.org/x/tools/gopls/internal/lsp/snippet"
+)
+
+const (
+	showGopStyle bool = true
 )
 
 // deepSearch searches a candidate and its subordinate objects for completion
@@ -166,9 +173,15 @@ func (c *gopCompleter) addCandidate(ctx context.Context, cand *candidate) {
 	}
 
 	// Lower score of method calls so we prefer fields and vars over calls.
+	var aliasNoSnip bool
 	if cand.hasMod(invoke) {
-		if sig, ok := obj.Type().Underlying().(*types.Signature); ok && sig.Recv() != nil {
-			cand.score *= 0.9
+		if sig, ok := obj.Type().Underlying().(*types.Signature); ok {
+			if sig.Params() == nil || (sig.Recv() != nil && sig.Variadic() && sig.Params().Len() == 1) {
+				aliasNoSnip = true
+			}
+			if sig.Recv() != nil {
+				cand.score *= 0.9
+			}
 		}
 	}
 
@@ -190,13 +203,109 @@ func (c *gopCompleter) addCandidate(ctx context.Context, cand *candidate) {
 		cand.score = 0
 	}
 
-	cand.name = deepCandName(cand)
+	var aliasName string
+	cand.name, aliasName = gopDeepCandName(cand, c.pkg.GetTypes())
 	if item, err := c.item(ctx, *cand); err == nil {
 		c.items = append(c.items, item)
+		if aliasName != cand.name {
+			c.items = append(c.items, cloneAliasItem(item, cand.name, aliasName, 0.0001, aliasNoSnip))
+		}
 	} else if false && goxls.DbgCompletion {
 		log.Println("gopCompleter.addCandidate item:", err)
 		log.SingleStack()
 	}
+}
+
+func cloneAliasItem(item CompletionItem, name string, alias string, score float64, noSnip bool) CompletionItem {
+	aliasItem := item
+	if showGopStyle {
+		if item.isOverload {
+			aliasItem.Label = fmt.Sprintf("%-30v (Go+ overload)", alias)
+		} else {
+			aliasItem.Label = fmt.Sprintf("%-30v (Go+)", alias)
+		}
+	} else {
+		aliasItem.Label = alias
+	}
+	aliasItem.InsertText = alias
+	if noSnip {
+		aliasItem.snippet = nil
+	} else {
+		var snip snippet.Builder
+		snip.Write([]byte(strings.Replace(item.snippet.String(), name, alias, 1)))
+		aliasItem.snippet = &snip
+	}
+	aliasItem.Score += score
+	aliasItem.isAlias = true
+	return aliasItem
+}
+
+// deepCandName produces the full candidate name including any
+// ancestor objects. For example, "foo.bar().baz" for candidate "baz".
+func gopDeepCandName(cand *candidate, this *types.Package) (name string, alias string) {
+	totalLen := len(cand.obj.Name())
+	totalLen2 := totalLen
+	for i, obj := range cand.path {
+		n := len(obj.Name()) + 1
+		totalLen += n
+		totalLen2 += n
+		if cand.pathInvokeMask&(1<<uint16(i)) > 0 {
+			totalLen += 2
+		}
+	}
+
+	var buf strings.Builder
+	buf.Grow(totalLen)
+	var buf2 strings.Builder
+	buf.Grow(totalLen2)
+
+	for i, obj := range cand.path {
+		buf.WriteString(obj.Name())
+		buf2.WriteString(gopStyleName(obj, this, nil))
+		if cand.pathInvokeMask&(1<<uint16(i)) > 0 {
+			buf.WriteByte('(')
+			buf.WriteByte(')')
+		}
+		buf.WriteByte('.')
+		buf2.WriteByte('.')
+	}
+
+	buf.WriteString(cand.obj.Name())
+	buf2.WriteString(gopStyleName(cand.obj, this, cand.lookup))
+
+	return buf.String(), buf2.String()
+}
+
+func hasAliasName(name string) (alias string, ok bool) {
+	if c := name[0]; c >= 'A' && c <= 'Z' {
+		if len(name) > 1 {
+			if c1 := name[1]; c1 >= 'A' && c1 <= 'Z' {
+				return
+			}
+		}
+		alias, ok = string(rune(c)-('A'-'a'))+name[1:], true
+	}
+	return
+}
+
+func gopStyleName(obj types.Object, this *types.Package, lookup func(pkg *types.Package, name string) *types.Selection) (name string) {
+	name = obj.Name()
+	if isFunc(obj) {
+		if pkg := obj.Pkg(); pkg != nil {
+			if pkg != this {
+				if alias, ok := hasAliasName(name); ok {
+					return alias
+				}
+			} else if lookup != nil {
+				if alias, ok := hasAliasName(name); ok {
+					if lookup(this, alias) == nil {
+						return alias
+					}
+				}
+			}
+		}
+	}
+	return
 }
 
 // penalty reports a score penalty for cand in the range (0, 1).

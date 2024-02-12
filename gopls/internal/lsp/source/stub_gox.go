@@ -196,9 +196,13 @@ func (%s%s%s) %s%s {
 	io.Copy(&buf, &newMethods)
 	buf.Write(input[insertOffset:])
 
+	mod, err := snapshot.GopModForFile(ctx, declPGF.URI)
+	if err != nil {
+		return nil, nil, fmt.Errorf("could not find gop mod: %w", err)
+	}
 	// Re-parse the file.
 	fset := token.NewFileSet()
-	newF, err := parserutil.ParseFile(fset, declPGF.File.Name.Name, buf.Bytes(), parser.ParseComments)
+	newF, err := parserutil.ParseFileEx(mod, fset, declPGF.File.Name.Name, buf.Bytes(), parser.ParseComments)
 	if err != nil {
 		return nil, nil, fmt.Errorf("could not reparse file: %w", err)
 	}

@@ -16,6 +16,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/goplus/mod/gopmod"
 	"golang.org/x/mod/modfile"
 	"golang.org/x/tools/gopls/internal/lsp/command"
 	"golang.org/x/tools/gopls/internal/lsp/protocol"
@@ -255,7 +256,7 @@ func missingModuleDiagnostics(ctx context.Context, snapshot *snapshot, pm *sourc
 		// If -mod=readonly is not set we may have successfully imported
 		// packages from missing modules. Otherwise they'll be in
 		// MissingDependencies. Combine both.
-		imps, err := parseImports(ctx, snapshot, goFiles, gopFiles)
+		imps, err := parseImports(ctx, snapshot, goFiles, gopFiles, m.GopMod_)
 		if err != nil {
 			return nil, err
 		}
@@ -498,7 +499,7 @@ func missingModuleForImport(pgf *source.ParsedGoFile, imp *ast.ImportSpec, req *
 // CompiledGoFiles, after cgo processing.)
 //
 // TODO(rfindley): this should key off source.ImportPath.
-func parseImports(ctx context.Context, s *snapshot, files, gopFiles []source.FileHandle) (map[string]bool, error) {
+func parseImports(ctx context.Context, s *snapshot, files, gopFiles []source.FileHandle, getGopMod func() *gopmod.Module) (map[string]bool, error) {
 	pgfs, err := s.view.parseCache.parseFiles(ctx, token.NewFileSet(), source.ParseHeader, false, files...)
 	if err != nil { // e.g. context cancellation
 		return nil, err
@@ -512,7 +513,10 @@ func parseImports(ctx context.Context, s *snapshot, files, gopFiles []source.Fil
 		}
 	}
 	if len(gopFiles) > 0 {
-		log.Panicln("todo: Go+ files")
+		err := parseGopImports(ctx, getGopMod(), s, gopFiles, seen)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return seen, nil
 }

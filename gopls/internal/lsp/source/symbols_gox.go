@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"github.com/goplus/gop/ast"
+	"github.com/goplus/gop/cl"
 	"github.com/goplus/gop/token"
 	"github.com/goplus/gop/x/typesutil"
 	"golang.org/x/tools/gopls/internal/goxls/parserutil"
@@ -24,13 +25,17 @@ func GopDocumentSymbols(ctx context.Context, snapshot Snapshot, fh FileHandle) (
 	if err != nil {
 		return nil, fmt.Errorf("getting file for GopDocumentSymbols: %w", err)
 	}
-
+	file := pgf.File
+	var classType string
+	if file.IsClass {
+		classType, _ = cl.ClassNameAndExt(fh.URI().Filename())
+	}
 	// Build symbols for file declarations. When encountering a declaration with
 	// errors (typically because positions are invalid), we skip the declaration
 	// entirely. VS Code fails to show any symbols if one of the top-level
 	// symbols is missing position information.
 	var symbols []protocol.DocumentSymbol
-	for _, decl := range pgf.File.Decls {
+	for _, decl := range file.Decls {
 		switch decl := decl.(type) {
 		case *ast.FuncDecl:
 			if decl.Name.Name == "_" {
@@ -38,9 +43,27 @@ func GopDocumentSymbols(ctx context.Context, snapshot Snapshot, fh FileHandle) (
 			}
 			fs, err := gopFuncSymbol(pgf.Mapper, pgf.Tok, decl)
 			if err == nil {
-				// If function is a method, prepend the type of the method.
-				if decl.Recv != nil && len(decl.Recv.List) > 0 {
-					fs.Name = fmt.Sprintf("(%s).%s", typesutil.ExprString(decl.Recv.List[0].Type), fs.Name)
+				if file.IsClass {
+					// class file func to method
+					fs.Kind = protocol.Method
+					var name = decl.Name.Name
+					if decl.Shadow && name == "main" {
+						if file.IsProj {
+							name = "MainEntry"
+						} else {
+							name = "Main"
+						}
+					}
+					if !decl.IsClass && decl.Recv != nil && len(decl.Recv.List) > 0 {
+						fs.Name = fmt.Sprintf("(%s).%s", typesutil.ExprString(decl.Recv.List[0].Type), fs.Name)
+					} else {
+						fs.Name = fmt.Sprintf("(*%s).%s", classType, name)
+					}
+				} else {
+					// If function is a method, prepend the type of the method.
+					if decl.Recv != nil && len(decl.Recv.List) > 0 {
+						fs.Name = fmt.Sprintf("(%s).%s", typesutil.ExprString(decl.Recv.List[0].Type), fs.Name)
+					}
 				}
 				symbols = append(symbols, fs)
 			}

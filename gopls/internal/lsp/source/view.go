@@ -258,6 +258,10 @@ type Snapshot interface {
 	// If these indexes cannot be loaded from cache, the requested packages may
 	// be type-checked.
 	MethodSets(ctx context.Context, ids ...PackageID) ([]*methodsets.Index, error)
+
+	// GopModForFile returns gop module for gop file by uri.
+	// It returns an error if the context was cancelled.
+	GopModForFile(ctx context.Context, uri span.URI) (*gopmod.Module, error)
 }
 
 // NarrowestMetadataForFile returns metadata for the narrowest package
@@ -566,6 +570,7 @@ type Metadata struct {
 	GopFiles         []span.URI
 	CompiledGopFiles []span.URI
 	gopMod_          *gopmod.Module // see GopMod_()
+	gopImporter      types.Importer
 
 	ForTest       PackagePath // q in a "p [q.test]" package, else ""
 	TypesSizes    types.Sizes

@@ -29,7 +29,7 @@ func gopParsed(an *analysisNode, ctx context.Context) ([]*source.ParsedGopFile, 
 				// as cached ASTs require the global FileSet.
 				// ast.Object resolution is unfortunately an implied part of the
 				// go/analysis contract.
-				pgf, err := parseGopImpl(ctx, an.fset, fh, parserutil.ParseFull&^parserutil.SkipObjectResolution, false)
+				pgf, err := parseGopImpl(ctx, an.m.GopMod_(), an.fset, fh, parserutil.ParseFull&^parserutil.SkipObjectResolution, false)
 				parsed[i] = pgf
 				return err
 			})

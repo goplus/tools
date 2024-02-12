@@ -644,46 +644,53 @@ func (b *typeCheckBatch) checkPackageForImport(ctx context.Context, ph *packageH
 		return nil, ctx.Err()
 	}
 
+	pkg := types.NewPackage(string(ph.localInputs.pkgPath), string(ph.localInputs.name))
+
 	// goxls: use Go+
 	// Parse the compiled go files, bypassing the parse cache as packages checked
 	// for import are unlikely to get cache hits. Additionally, we can optimize
 	// parsing slightly by not passing parser.ParseComments.
-	gopFiles := make([]*gopast.File, len(ph.localInputs.compiledGopFiles))
-	{
-		var group errgroup.Group
-		// Set an arbitrary concurrency limit; we want some parallelism but don't
-		// need GOMAXPROCS, as there is already a lot of concurrency among calls to
-		// checkPackageForImport.
-		//
-		// TODO(rfindley): is there a better way to limit parallelism here? We could
-		// have a global limit on the type-check batch, but would have to be very
-		// careful to avoid starvation.
-		group.SetLimit(4)
-		for i, fh := range ph.localInputs.compiledGopFiles {
-			i, fh := i, fh
-			group.Go(func() error {
-				pgf, err := parseGopImpl(ctx, b.fset, fh, parserutil.SkipObjectResolution, false)
-				gopFiles[i] = pgf.File
-				return err
-			})
+	if len(ph.localInputs.compiledGopFiles) > 0 {
+		mod := ph.m.GopMod_()
+		gopFiles := make([]*gopast.File, len(ph.localInputs.compiledGopFiles))
+		{
+			var group errgroup.Group
+			// Set an arbitrary concurrency limit; we want some parallelism but don't
+			// need GOMAXPROCS, as there is already a lot of concurrency among calls to
+			// checkPackageForImport.
+			//
+			// TODO(rfindley): is there a better way to limit parallelism here? We could
+			// have a global limit on the type-check batch, but would have to be very
+			// careful to avoid starvation.
+			group.SetLimit(4)
+			for i, fh := range ph.localInputs.compiledGopFiles {
+				i, fh := i, fh
+				group.Go(func() error {
+					pgf, err := parseGopImpl(ctx, mod, b.fset, fh, parserutil.SkipObjectResolution, false)
+					gopFiles[i] = pgf.File
+					return err
+				})
+			}
+			if err := group.Wait(); err != nil {
+				return nil, err // cancelled, or catastrophic error (e.g. missing file)
+			}
 		}
-		if err := group.Wait(); err != nil {
-			return nil, err // cancelled, or catastrophic error (e.g. missing file)
+
+		// Type checking is expensive, and we may not have ecountered cancellations
+		// via parsing (e.g. if we got nothing but cache hits for parsed files).
+		if ctx.Err() != nil {
+			return nil, ctx.Err()
 		}
-	}
 
-	// Type checking is expensive, and we may not have ecountered cancellations
-	// via parsing (e.g. if we got nothing but cache hits for parsed files).
-	if ctx.Err() != nil {
-		return nil, ctx.Err()
+		// goxls: use Go+
+		cfg.Importer = newGopImporter(cfg.Importer, ph.m.GopImporter(b.fset))
+		opts := &typesutil.Config{Types: pkg, Fset: b.fset, Mod: mod}
+		check := typesutil.NewChecker(cfg, opts, nil, new(typesutil.Info))
+		_ = check.Files(files, gopFiles) // ignore errors
+	} else {
+		check := types.NewChecker(cfg, b.fset, pkg, nil)
+		_ = check.Files(files) // ignore errors
 	}
-
-	pkg := types.NewPackage(string(ph.localInputs.pkgPath), string(ph.localInputs.name))
-	// goxls: use Go+
-	// check := types.NewChecker(cfg, b.fset, pkg, nil)
-	opts := &typesutil.Config{Types: pkg, Fset: b.fset, Mod: ph.m.GopMod_()}
-	check := typesutil.NewChecker(cfg, opts, nil, new(typesutil.Info))
-	_ = check.Files(files, gopFiles) // ignore errors
 
 	// If the context was cancelled, we may have returned a ton of transient
 	// errors to the type checker. Swallow them.
@@ -1615,18 +1622,21 @@ func doTypeCheck(ctx context.Context, b *typeCheckBatch, ph *packageHandle) (*sy
 	}
 
 	// goxls: Go+ files
-	pkg.gopTypesInfo = newGopTypeInfo()
-	pkg.gopFiles, err = b.parseCache.parseGopFiles(ctx, b.fset, parserutil.ParseFull, false, inputs.gopFiles...)
-	if err != nil {
-		return nil, err
-	}
-	pkg.compiledGopFiles, err = b.parseCache.parseGopFiles(ctx, b.fset, parserutil.ParseFull, false, inputs.compiledGopFiles...)
-	if err != nil {
-		return nil, err
-	}
-	for _, pgf := range pkg.compiledGopFiles {
-		if pgf.ParseErr != nil {
-			pkg.parseErrors = append(pkg.parseErrors, pgf.ParseErr)
+	if len(inputs.gopFiles) > 0 || len(inputs.compiledGopFiles) > 0 {
+		mod := ph.m.GopMod_()
+		pkg.gopTypesInfo = newGopTypeInfo()
+		pkg.gopFiles, err = b.parseCache.parseGopFiles(ctx, mod, b.fset, parserutil.ParseFull, false, inputs.gopFiles...)
+		if err != nil {
+			return nil, err
+		}
+		pkg.compiledGopFiles, err = b.parseCache.parseGopFiles(ctx, mod, b.fset, parserutil.ParseFull, false, inputs.compiledGopFiles...)
+		if err != nil {
+			return nil, err
+		}
+		for _, pgf := range pkg.compiledGopFiles {
+			if pgf.ParseErr != nil {
+				pkg.parseErrors = append(pkg.parseErrors, pgf.ParseErr)
+			}
 		}
 	}
 
@@ -1652,11 +1662,6 @@ func doTypeCheck(ctx context.Context, b *typeCheckBatch, ph *packageHandle) (*sy
 	}
 	cfg := b.typesConfig(ctx, inputs, onError)
 
-	// goxls: use Go+
-	// check := types.NewChecker(cfg, pkg.fset, pkg.types, pkg.typesInfo)
-	opts := &typesutil.Config{Types: pkg.types, Fset: pkg.fset, Mod: ph.m.GopMod_()}
-	check := typesutil.NewChecker(cfg, opts, pkg.typesInfo, pkg.gopTypesInfo)
-
 	var files []*ast.File
 	for _, cgf := range pkg.compiledNongenGoFiles {
 		files = append(files, cgf.File)
@@ -1670,8 +1675,19 @@ func doTypeCheck(ctx context.Context, b *typeCheckBatch, ph *packageHandle) (*sy
 
 	// Type checking errors are handled via the config, so ignore them here.
 	// goxls: use Go+
-	// _ = check.Files(files) // 50us-15ms, depending on size of package
-	_ = checkFiles(check, files, pkg.compiledGopFiles)
+	if len(pkg.compiledGopFiles) > 0 {
+		var gopFiles []*gopast.File
+		for _, cgf := range pkg.compiledGopFiles {
+			gopFiles = append(gopFiles, cgf.File)
+		}
+		cfg.Importer = newGopImporter(cfg.Importer, ph.m.GopImporter(pkg.fset))
+		opts := &typesutil.Config{Types: pkg.types, Fset: pkg.fset, Mod: ph.m.GopMod_()}
+		check := typesutil.NewChecker(cfg, opts, pkg.typesInfo, pkg.gopTypesInfo)
+		_ = check.Files(files, gopFiles)
+	} else {
+		check := types.NewChecker(cfg, pkg.fset, pkg.types, pkg.typesInfo)
+		_ = check.Files(files) // 50us-15ms, depending on size of package
+	}
 
 	// If the context was cancelled, we may have returned a ton of transient
 	// errors to the type checker. Swallow them.
@@ -1776,7 +1792,7 @@ func depsErrors(ctx context.Context, m *source.Metadata, meta *metadataGraph, fs
 		return nil, nil
 	}
 	if len(m.CompiledGopFiles) > 0 {
-		log.Panicln("todo: Go+ files")
+		return nil, fmt.Errorf("todo: Go+ files: %v", m.CompiledGopFiles)
 	}
 
 	// Build an index of all imports in the package.

@@ -42,7 +42,11 @@ func KnownPackagePaths(ctx context.Context, snapshot Snapshot, fh FileHandle) ([
 	}
 	imported := make(map[PackagePath]bool)
 	if kind := snapshot.View().FileKind(fh); kind == Gop { // goxls: Go+
-		file, err := parserutil.ParseFile(token.NewFileSet(), fh.URI().Filename(), src, gopparser.ImportsOnly)
+		mod, err := snapshot.GopModForFile(ctx, fh.URI())
+		if err != nil {
+			return nil, err
+		}
+		file, err := parserutil.ParseFileEx(mod, token.NewFileSet(), fh.URI().Filename(), src, gopparser.ImportsOnly)
 		if err != nil {
 			return nil, err
 		}

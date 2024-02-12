@@ -197,6 +197,9 @@ func gopComputeFixEdits(snapshot Snapshot, pgf *ParsedGopFile, options *imports.
 	if fixedData == nil || fixedData[len(fixedData)-1] != '\n' {
 		fixedData = append(fixedData, '\n') // ApplyFixes may miss the newline, go figure.
 	}
+	if string(fixedData) == "\n" && pgf.File.NoPkgDecl {
+		fixedData = nil
+	}
 	edits := snapshot.View().Options().ComputeEdits(left, string(fixedData))
 	return protocolEditsFromSource([]byte(left), edits)
 }
