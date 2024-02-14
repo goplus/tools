@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/google/go-cmp v0.6.0
-	github.com/goplus/gop v1.2.0-pre.1.0.20240213120621-ecf48ca5a047
+	github.com/goplus/gop v1.2.1
 	github.com/goplus/gox v1.14.10
 	github.com/goplus/mod v0.13.5
 	github.com/jba/printsrc v0.2.2
