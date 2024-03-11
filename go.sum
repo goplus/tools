@@ -1,7 +1,7 @@
-github.com/goplus/gop v1.2.0-pre.1.0.20240227115532-d66dbcae5296 h1:y52szYBYNOH7zB9uS7+35tAzhaNYPgH6D7loNpxNsao=
-github.com/goplus/gop v1.2.0-pre.1.0.20240227115532-d66dbcae5296/go.mod h1:+luZPTOhenSxxGHPp+dDB0O19fmEW4KO+8xPVZpzl4E=
-github.com/goplus/gox v1.14.13-0.20240223085136-517ed22a822d h1:K4egyF3pziguN1LjXNNkBQGY0UbG4I+7vmKR8w5IM6o=
-github.com/goplus/gox v1.14.13-0.20240223085136-517ed22a822d/go.mod h1:6b6XYHmyiCevhwuEHcV/jzm7Z2FXLDBhuxgvkjceA+o=
+github.com/goplus/gogen v1.15.1 h1:iz/fFpOeldjwmnjLzEdNsZF2mCf+sOHJavbAvV3o7sY=
+github.com/goplus/gogen v1.15.1/go.mod h1:92qEzVgv7y8JEFICWG9GvYI5IzfEkxYdsA1DbmnTkqk=
+github.com/goplus/gop v1.2.5 h1:kBCcvJ7ONt3IqTUTNGb+n9JO1nwTp5STg1UUSEfvz/k=
+github.com/goplus/gop v1.2.5/go.mod h1:5rLlryvlZhWLIBw1Rok8s0uvyO54vcYw/7sFLhqtNTc=
 github.com/goplus/mod v0.13.9 h1:B9zZoHi2AzMltTSOFqZNVjqGlSMlhhNTWwEzVqhTQzg=
 github.com/goplus/mod v0.13.9/go.mod h1:MibsLSftGmxaQq78YzUzNviyFwB9RtpMaoscufvEKH4=
 github.com/qiniu/x v1.13.9 h1:OUcQZSze1oTO5pzrhsepTUvEb9K9WtOiqZomWffFGWE=
