@@ -6,12 +6,12 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/goplus/gogen v1.15.1
 	github.com/goplus/gop v1.2.5
-	github.com/goplus/mod v0.13.9
+	github.com/goplus/mod v0.13.10
 	github.com/jba/printsrc v0.2.2
 	github.com/jba/templatecheck v0.7.0
-	github.com/qiniu/x v1.13.9
+	github.com/qiniu/x v1.13.10
 	github.com/sergi/go-diff v1.1.0
-	golang.org/x/mod v0.16.0
+	golang.org/x/mod v0.17.0
 	golang.org/x/sync v0.6.0
 	golang.org/x/sys v0.18.0
 	golang.org/x/text v0.14.0
