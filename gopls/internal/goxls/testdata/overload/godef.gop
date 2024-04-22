@@ -1,0 +1,57 @@
+import (
+	"golang.org/lsptests/overload/a"
+	"golang.org/lsptests/overload/b"
+)
+
+func _() {
+	add "hello"       //@godef("add", addString)
+	add 100, 200      //@godef("add", addInt)
+	add 100, 200, 300 //@godef("add", addFloat)
+}
+
+func _() {
+	var m M
+	m.add "hello"       //@godef("add", m_addString)
+	m.add 100, 200      //@godef("add", m_addInt)
+	m.add 100, 200, 300 //@godef("add", m_addFloat)
+}
+
+func _() {
+	Demo          //@godef("Demo",Demo__0)
+	Demo 100      //@godef("Demo",Demo__1)
+	Demo 100, 200 //@godef("Demo",Demo__2)
+	Demo "hello"  //@godef("Demo",Demo__3)
+}
+
+func _() {
+	var n N
+	n.add 100     //@godef("add",Add__0)
+	n.add "hello" //@godef("add",Add__1)
+}
+
+func _() {
+	a.demo          //@godef("demo",a_demo__0)
+	a.demo 100      //@godef("demo",a_demo__1)
+	a.demo 100, 200 //@godef("demo",a_demo__2)
+	a.demo "hello"  //@godef("demo",a_demo__3)
+}
+
+func _() {
+	var n a.N
+	n.add 100     //@godef("add",a_add__0)
+	n.add "hello" //@godef("add",a_add__1)
+}
+
+func _() {
+	b.gopDemo       //@godef("gopDemo",b_gopdemo)
+	b.demo          //@godef("demo",b_demo__0)
+	b.demo 100      //@godef("demo",b_demo__1)
+	b.demo 100, 200 //@godef("demo",b_demo__2)
+	b.demo "hello"  //@godef("demo",b_demo__3)
+}
+
+func _() {
+	var n b.N
+	n.add 100     //@godef("add",b_add__0)
+	n.add "hello" //@godef("add",b_add__1)
+}

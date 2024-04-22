@@ -1,0 +1,3 @@
+func _() {
+	Demo 100,//@signature_overload("//", "Demo(n1 int, n2 int)", 2, 1)
+}

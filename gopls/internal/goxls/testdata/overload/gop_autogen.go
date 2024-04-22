@@ -3,6 +3,8 @@
 package main
 
 import (
+	"strings"
+
 	"golang.org/lsptests/overload/a"
 	"golang.org/lsptests/overload/b"
 )

@@ -66,6 +66,18 @@ func a.Demo__3(s ...string)
 ```
 
 [`a.Demo__3` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/a#Demo__3)
+-- addFloat-hoverdef --
+```go
+func addFloat(n1 float64, n2 float64, n3 float64) float64
+```
+-- addInt-hoverdef --
+```go
+func addInt(n1 int, n2 int) int
+```
+-- addString-hoverdef --
+```go
+func addString(s ...string) string
+```
 -- b_add__0-hoverdef --
 ```go
 func (*b.N).Add__0(a int)
@@ -108,33 +120,15 @@ func b.GopDemo()
 ```
 
 [`b.GopDemo` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/b#GopDemo)
--- pkg_add__0-hoverdef --
+-- m_addFloat-hoverdef --
 ```go
-func (*pkg.N).Add__0(a int)
+func (*M).addFloat(n1 float64, n2 float64, n3 float64) float64
 ```
-
-[`(pkg.N).Add__0` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/pkg#N.Add__0)
--- pkg_add__1-hoverdef --
+-- m_addInt-hoverdef --
 ```go
-func (*pkg.N).Add__1(a ...string)
+func (*M).addInt(n1 int, n2 int) int
 ```
-
-[`(pkg.N).Add__1` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/pkg#N.Add__1)
--- pkg_demo__0-hoverdef --
+-- m_addString-hoverdef --
 ```go
-func pkg.Demo__0()
+func (*M).addString(s ...string) string
 ```
-
-[`pkg.Demo__0` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/pkg#Demo__0)
--- pkg_demo__1-hoverdef --
-```go
-func pkg.Demo__1(n int) int
-```
-
-[`pkg.Demo__1` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/pkg#Demo__1)
--- pkg_demo__3-hoverdef --
-```go
-func pkg.Demo__3(s ...string)
-```
-
-[`pkg.Demo__3` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/pkg#Demo__3)

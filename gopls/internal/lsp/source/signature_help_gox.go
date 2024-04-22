@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"go/types"
+	"strings"
 
 	"github.com/goplus/gop/ast"
 	"github.com/goplus/gop/token"
@@ -37,7 +38,7 @@ func GopSignatureHelp(ctx context.Context, snapshot Snapshot, fh FileHandle, pos
 	}
 	var offset = int(pos - start)
 	npos := pos
-	if len(pgf.File.Code) >= offset {
+	if len(pgf.File.Code) > offset {
 		if pgf.File.Code[offset] == '\n' {
 			offset--
 			npos--
@@ -124,8 +125,9 @@ FindCall:
 	var sigType types.Type
 	if callExpr != nil {
 		sigType = pkg.GopTypesInfo().TypeOf(callExpr.Fun)
-	} else {
-		sigType = cmdObj.Type()
+	}
+	if sigType == nil && obj != nil {
+		sigType = obj.Type()
 	}
 	if sigType == nil {
 		return nil, 0, 0, fmt.Errorf("cannot get type for Fun %[1]T (%[1]v)", callExpr.Fun)
@@ -145,12 +147,14 @@ FindCall:
 		comment *ast.CommentGroup
 	)
 	if obj != nil {
-		d, err := HoverDocForObject(ctx, snapshot, pkg.FileSet(), obj)
-		if err != nil && !overloads {
-			return nil, 0, 0, err
-		}
 		name = obj.Name()
-		comment = d
+		if !overloads {
+			d, err := HoverDocForObject(ctx, snapshot, pkg.FileSet(), obj)
+			if err != nil {
+				return nil, 0, 0, err
+			}
+			comment = d
+		}
 	} else {
 		name = "func"
 	}
@@ -171,21 +175,62 @@ FindCall:
 			Parameters:    paramInfo,
 		}, nil
 	}
+	makeInfoEx := func(name string, obj types.Object, sig *types.Signature) (*protocol.SignatureInformation, string, error) {
+		d, err := HoverDocForObject(ctx, snapshot, pkg.FileSet(), obj)
+		if err != nil {
+			return nil, "", err
+		}
+		s, err := NewSignature(ctx, snapshot, pkg, sig, d, qf, mq)
+		if err != nil {
+			return nil, "", err
+		}
+		paramInfo := make([]protocol.ParameterInformation, 0, len(s.params))
+		for _, p := range s.params {
+			paramInfo = append(paramInfo, protocol.ParameterInformation{Label: p})
+		}
+		return &protocol.SignatureInformation{
+			Label:         name + s.Format(),
+			Documentation: stringToSigInfoDocumentation(s.doc, snapshot.View().Options()),
+			Parameters:    paramInfo,
+		}, s.doc, nil
+	}
 
 	if overloads {
-		activeSignature := 0
+		var activeSignature int
+		var matchSignature []int
 		infos := make([]protocol.SignatureInformation, len(objs))
+		docs := make([]string, len(objs))
 		for i, o := range objs {
-			if o.Name() == obj.Name() {
-				activeSignature = i
-			}
-			info, err := makeInfo(o.Name(), o.Type().(*types.Signature))
+			sig := o.Type().(*types.Signature)
+			info, doc, err := makeInfoEx(ident.Name, o, sig)
 			if err != nil {
 				return nil, 0, 0, nil
 			}
+			if o.Name() == obj.Name() {
+				activeSignature = i
+			}
+			if sig.Variadic() || (sig.Params() != nil && sig.Params().Len() > activeParam) || (sig.Params() == nil && activeParam == 0) {
+				matchSignature = append(matchSignature, i)
+			}
 			infos[i] = *info
+			docs[i] = doc
 		}
-		return infos, activeSignature, activeParam, nil
+		for i := 0; i < len(infos); i++ {
+			var doc string
+			for j, v := range infos {
+				if i == j {
+					doc += "```doc\n* " + v.Label + "\n```\n"
+				} else {
+					doc += "```doc\n  " + v.Label + "\n```\n"
+				}
+			}
+			if s := docs[i]; s != "" {
+				doc += "---\n"
+				doc += stringToDocumentation(s, snapshot.View().Options())
+			}
+			infos[i].Documentation = stringToMarkDown(doc)
+		}
+		return infos, checkBestSignature(activeSignature, matchSignature), activeParam, nil
 	}
 	info, err := makeInfo(name, sig)
 	if err != nil {
@@ -238,4 +283,35 @@ func gopActiveParameter(callExpr *ast.CallExpr, numParams int, variadic bool, po
 		start = expr.Pos() + 1 // to account for commas
 	}
 	return activeParam
+}
+
+func checkBestSignature(active int, matches []int) int {
+	if len(matches) == 0 {
+		return active
+	}
+	for _, n := range matches {
+		if active == n {
+			return active
+		}
+	}
+	return matches[0]
+}
+
+func stringToMarkDown(s string) *protocol.Or_SignatureInformation_documentation {
+	k := protocol.Markdown
+	return &protocol.Or_SignatureInformation_documentation{
+		Value: protocol.MarkupContent{
+			Kind:  k,
+			Value: s,
+		},
+	}
+}
+
+func stringToDocumentation(v string, options *Options) string {
+	if options.PreferredContentFormat == protocol.Markdown {
+		v = CommentToMarkdown(v, options)
+		v = strings.TrimSuffix(v, "\n") // TODO(pjw): change the golden files
+		return v
+	}
+	return v
 }
