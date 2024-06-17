@@ -5,7 +5,7 @@ go 1.18 // tagx:compat 1.16
 require (
 	github.com/goplus/gop v1.2.0-pre.1.0.20240506041011-133b8a33c31b
 	github.com/goplus/mod v0.13.10
-	github.com/yuin/goldmark v1.4.13
+	github.com/yuin/goldmark v1.7.2
 	golang.org/x/mod v0.17.0
 	golang.org/x/net v0.25.0
 	golang.org/x/sync v0.6.0
