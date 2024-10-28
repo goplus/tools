@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/goplus/gop/ast"
+	"github.com/goplus/gop/cl"
 	"github.com/goplus/gop/printer"
 	"github.com/goplus/gop/token"
 	"github.com/goplus/gop/x/typesutil"
@@ -286,4 +287,17 @@ func gopEmbeddedIdent(x ast.Expr) *ast.Ident {
 		}
 	}
 	return nil
+}
+
+func GoxTestClassType(file *ast.File, filename string) (classType string, isGoxTest bool) {
+	if file.IsClass {
+		var ext string
+		classType, _, ext = cl.ClassNameAndExt(filename)
+		if file.IsNormalGox {
+			isGoxTest = strings.HasSuffix(ext, "_test.gox")
+		} else {
+			isGoxTest = strings.HasSuffix(ext, "test.gox")
+		}
+	}
+	return
 }

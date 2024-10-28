@@ -189,6 +189,9 @@ func gopCommandCodeLens(ctx context.Context, snapshot Snapshot, fh FileHandle) (
 	if err != nil {
 		return nil, err
 	}
+	if classType, isGoxTest := GoxTestClassType(pgf.File, filename); isGoxTest {
+		return goxTestCodeLens(pgf, classType)
+	}
 	if pgf.File.Name.Name == "main" {
 		rng, err := pgf.PosRange(pgf.File.Pos(), pgf.File.Pos())
 		if err != nil {
@@ -205,4 +208,37 @@ func gopCommandCodeLens(ctx context.Context, snapshot Snapshot, fh FileHandle) (
 		}, nil
 	}
 	return nil, nil
+}
+
+func goxTestCodeLens(pgf *ParsedGopFile, classType string) ([]protocol.CodeLens, error) {
+	rng, err := pgf.PosRange(pgf.File.Pos(), pgf.File.Pos())
+	if err != nil {
+		return nil, err
+	}
+	codelens := []protocol.CodeLens{
+		{Range: rng, Command: &protocol.Command{
+			Title:   "run test package",
+			Command: "gop.test.package",
+		}},
+	}
+	if pgf.File.IsProj && classType == "main" { //goxls:proj gox test
+		return codelens, nil
+	}
+	args, err := command.MarshalArgs(
+		map[string]string{
+			"functionName": "Test_" + classType,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	codelens = append(codelens, protocol.CodeLens{
+		Range: rng,
+		Command: &protocol.Command{
+			Title:     "run file tests",
+			Command:   "gop.test.cursor",
+			Arguments: args,
+		},
+	})
+	return codelens, nil
 }
