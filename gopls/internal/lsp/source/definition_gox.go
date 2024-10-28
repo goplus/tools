@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"go/types"
 	"log"
+	"strings"
 
 	"github.com/goplus/gop/ast"
 	"github.com/goplus/gop/token"
@@ -16,6 +17,8 @@ import (
 	"golang.org/x/tools/gopls/internal/goxls"
 	"golang.org/x/tools/gopls/internal/goxls/parserutil"
 	"golang.org/x/tools/gopls/internal/lsp/protocol"
+	"golang.org/x/tools/gopls/internal/lsp/safetoken"
+	"golang.org/x/tools/gopls/internal/span"
 	"golang.org/x/tools/internal/event"
 )
 
@@ -83,6 +86,14 @@ func GopDefinition(ctx context.Context, snapshot Snapshot, fh FileHandle, positi
 	if obj == nil {
 		return nil, nil
 	}
+
+	var anonyOvFunc *ast.FuncLit //goxls:overload anonymous member
+	if ovPkg, ovFuncLit, ovObj, ok := IsOverloadAnonymousMember(ctx, snapshot, pkg, obj); ok {
+		pkg = ovPkg
+		obj = ovObj
+		anonyOvFunc = ovFuncLit
+	}
+
 	if goxls.DbgDefinition {
 		log.Println("gopReferencedObject ret:", obj, "pos:", obj.Pos())
 	}
@@ -135,8 +146,12 @@ func GopDefinition(ctx context.Context, snapshot Snapshot, fh FileHandle, positi
 		return []protocol.Location{loc}, nil
 	}
 
+	typeEnd := adjustedObjEnd(obj)
+	if anonyOvFunc != nil { // goxls: anonymous overload function
+		typeEnd = anonyOvFunc.Type.End()
+	}
 	// Finally, map the object position.
-	loc, err := mapPosition(ctx, pkg.FileSet(), snapshot, obj.Pos(), adjustedObjEnd(obj))
+	loc, err := mapPosition(ctx, pkg.FileSet(), snapshot, obj.Pos(), typeEnd)
 	if goxls.DbgDefinition {
 		log.Println("gopReferencedObject mapPosition:", obj, "err:", err, "loc:", loc)
 	}
@@ -281,4 +296,51 @@ func gopImportDefinition(ctx context.Context, s Snapshot, pkg Package, pgf *Pars
 	}
 
 	return locs, nil
+}
+
+// goxls:match in current package & variants
+func IsOverloadAnonymousMember(ctx context.Context, snapshot Snapshot, pkg Package, obj types.Object) (Package, *ast.FuncLit, types.Object, bool) {
+	if _, ok := obj.(*types.Func); !ok {
+		return nil, nil, nil, false
+	}
+
+	declPosn := safetoken.StartPosition(pkg.FileSet(), obj.Pos())
+	declURI := span.URIFromPath(declPosn.Filename)
+
+	inPkg := func(searchPkg Package) (*ast.FuncLit, types.Object, bool) {
+		fset := searchPkg.FileSet()
+		for ov, om := range searchPkg.GopTypesInfo().Implicits {
+			if anonyOvFunc, ok := ov.(*ast.FuncLit); ok {
+				funPos := safetoken.StartPosition(fset, anonyOvFunc.Pos())
+				if declPosn.Offset == funPos.Offset {
+					return anonyOvFunc, om, true
+				}
+			}
+		}
+		return nil, nil, false
+	}
+
+	// goxls:match in current package
+	if funcLit, ovObj, ok := inPkg(pkg); ok {
+		return pkg, funcLit, ovObj, true
+	}
+
+	// goxls:match in variants package
+	if strings.HasSuffix(string(declURI), ".gop") {
+		variants, err := snapshot.MetadataForFile(ctx, declURI)
+		if err != nil {
+			return nil, nil, nil, false
+		}
+		for _, m := range variants {
+			varPkgs, err := snapshot.TypeCheck(ctx, m.ID)
+			if err != nil {
+				return nil, nil, nil, false
+			}
+			varPkg := varPkgs[0]
+			if funcLit, ovObj, ok := inPkg(varPkg); ok {
+				return varPkg, funcLit, ovObj, true
+			}
+		}
+	}
+	return nil, nil, nil, false
 }
