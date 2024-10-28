@@ -430,6 +430,9 @@ func gopPathEnclosingObjNode(f *ast.File, pos token.Pos) []ast.Node {
 			if pos == n.Star {
 				pos = n.X.Pos()
 			}
+		case *ast.FuncLit:
+			//goxls:overload anonymous function
+			found = n.Type.Func <= pos && pos <= n.Type.Func+token.Pos(len("func"))
 		}
 
 		return !found
