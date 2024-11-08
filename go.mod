@@ -6,7 +6,7 @@ require (
 	github.com/goplus/gop v1.3.0-pre.2
 	github.com/goplus/mod v0.13.12
 	github.com/yuin/goldmark v1.7.8
-	golang.org/x/mod v0.19.0
+	golang.org/x/mod v0.22.0
 	golang.org/x/net v0.29.0
 	golang.org/x/sync v0.8.0
 	golang.org/x/sys v0.25.0
