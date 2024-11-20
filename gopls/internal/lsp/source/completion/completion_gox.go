@@ -71,6 +71,9 @@ type gopCompleter struct {
 	// seen is the map that ensures we do not return duplicate results.
 	seen map[types.Object]bool
 
+	// skipFunc is the map skip index overload func id
+	skipFunc map[string]bool
+
 	// items is the list of completion items returned.
 	items []CompletionItem
 
@@ -383,6 +386,7 @@ func GopCompletion(ctx context.Context, snapshot source.Snapshot, fh source.File
 		path:                      path,
 		pos:                       pos,
 		seen:                      make(map[types.Object]bool),
+		skipFunc:                  make(map[string]bool),
 		enclosingFunc:             gopEnclosingFunction(path, pkg.GopTypesInfo()),
 		enclosingCompositeLiteral: gopEnclosingCompositeLiteral(path, pos, pkg.GopTypesInfo()),
 		deepState: deepCompletionState{

@@ -24,6 +24,38 @@ import (
 	"golang.org/x/tools/internal/typeparams"
 )
 
+func writeFuncName(buf *bytes.Buffer, f *types.Func) {
+	if f.Type() != nil {
+		sig := f.Type().(*types.Signature)
+		if recv := sig.Recv(); recv != nil {
+			buf.WriteByte('(')
+			switch t := recv.Type().(type) {
+			case *types.Interface:
+				buf.WriteString("interface")
+			case *types.Named:
+				obj := t.Origin().Obj()
+				if obj.Pkg() != nil {
+					buf.WriteString(obj.Pkg().Path())
+					buf.WriteByte('.')
+				}
+				buf.WriteString(obj.Name())
+			}
+			buf.WriteByte(')')
+			buf.WriteByte('.')
+		} else if f.Pkg() != nil {
+			buf.WriteString(f.Pkg().Path())
+			buf.WriteByte('.')
+		}
+	}
+	buf.WriteString(f.Name())
+}
+
+func funcId(fn *types.Func) string {
+	var buf bytes.Buffer
+	writeFuncName(&buf, fn)
+	return buf.String()
+}
+
 // item formats a candidate to a CompletionItem.
 func (c *gopCompleter) item(ctx context.Context, cand candidate) (CompletionItem, error) {
 	obj := cand.obj
@@ -145,7 +177,7 @@ Suffixes:
 					buf.WriteString("Go+ overload funcs\n")
 					for _, o := range objs {
 						if isIndexOverload(o.Name(), obj.Name()) {
-							c.seen[o] = true
+							c.skipFunc[funcId(o.(*types.Func))] = true
 						}
 						s, err := source.NewSignature(ctx, c.snapshot, c.pkg, o.Type().(*types.Signature), nil, c.qf, c.mq)
 						if err != nil {
