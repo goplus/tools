@@ -24,6 +24,7 @@ import (
 	"github.com/goplus/gop/scanner"
 	"github.com/goplus/gop/token"
 	"github.com/goplus/gop/x/typesutil"
+	"github.com/goplus/mod/gopmod"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/gop/ast/astutil"
 	"golang.org/x/tools/gopls/internal/goxls"
@@ -1431,7 +1432,12 @@ func (c *gopCompleter) lexical(ctx context.Context) error {
 		// position or embedded in interface declarations).
 		// builtinComparable = types.Universe.Lookup("comparable")
 	)
-	classType, isClass := parserutil.GetClassType(c.file, c.filename)
+	classType, _, err := parserutil.GetClassType(c.file, c.filename, func() (*gopmod.Module, error) {
+		return c.snapshot.GopModForFile(ctx, c.fh.URI())
+	})
+	if err != nil {
+		return fmt.Errorf("getting classType for gopCompleter: %w", err)
+	}
 	// Track seen variables to avoid showing completions for shadowed variables.
 	// This works since we look at scopes from innermost to outermost.
 	seen := make(map[string]struct{})
@@ -1446,7 +1452,7 @@ func (c *gopCompleter) lexical(ctx context.Context) error {
 		for _, name := range scope.Names() {
 			declScope, obj := scope.LookupParent(name, c.pos)
 			// Go+ class
-			if isClass && name == classType {
+			if c.file.IsClass && name == classType {
 				c.methodsAndFields(obj.Type(), true, nil, c.deepState.enqueue)
 				continue
 			}
