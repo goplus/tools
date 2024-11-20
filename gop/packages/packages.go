@@ -150,6 +150,9 @@ type Config = packages.Config
 type Package struct {
 	packages.Package
 
+	// GopMod is the gop packages module or nil
+	GopMod *gopmod.Module
+
 	// GopFiles lists the absolute file paths of the package's Go source files.
 	// It may include files that should not be compiled, for example because
 	// they contain non-matching build tags, are documentary pseudo-files such as
@@ -392,7 +395,13 @@ func addGopFiles(ret *Package, ld *loader, dir string, mode LoadMode, test bool)
 	fsetTemp := token.NewFileSet()
 	pkgName := ret.Name
 	var mod *gopmod.Module
-	var once sync.Once
+	if ld != nil {
+		mod = ld.Context.LoadMod(ret.Module)
+	} else {
+		mod, _ = gop.LoadMod(dir)
+	}
+	ret.GopMod = mod
+
 	for _, e := range entries {
 		fname := e.Name()
 		if strings.HasPrefix(fname, "_") {
@@ -400,7 +409,9 @@ func addGopFiles(ret *Package, ld *loader, dir string, mode LoadMode, test bool)
 		}
 		fext := path.Ext(fname)
 		if goputil.FileKind(fext) == goputil.FileUnknown {
-			continue
+			if mod == nil || !mod.IsClass(fext) {
+				continue
+			}
 		}
 		if !test {
 			if strings.HasSuffix(fname[:len(fname)-len(fext)], "_test") {
@@ -408,9 +419,6 @@ func addGopFiles(ret *Package, ld *loader, dir string, mode LoadMode, test bool)
 			}
 			// check gox class test
 			if strings.HasSuffix(fname, "test.gox") {
-				once.Do(func() {
-					mod, _ = gop.LoadMod(dir)
-				})
 				if mod != nil {
 					if _, ok := mod.ClassKind(fname); ok {
 						continue
@@ -428,7 +436,6 @@ func addGopFiles(ret *Package, ld *loader, dir string, mode LoadMode, test bool)
 	}
 	if ld != nil && len(ret.CompiledGopFiles) > 0 {
 		ctx := ld.Context
-		mod := ctx.LoadMod(ret.Module)
 		ret.GopSyntax = ld.parseFiles(ret, mod, ret.CompiledGopFiles)
 		if mode&(NeedTypes|NeedTypesInfo) != 0 {
 			ret.GopTypesInfo = &typesutil.Info{

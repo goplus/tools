@@ -444,9 +444,8 @@ func buildMetadata(updates map[PackageID]*source.Metadata, pkg *packages.Package
 		DepsErrors: packagesinternal.GetDepsErrors(pkg),
 		Standalone: standalone,
 	}
-	if len(pkg.GopFiles) > 0 {
-		m.LoadGopMod()
-	}
+
+	m.LoadGopMod(pkg.GopMod)
 
 	updates[id] = m
 
