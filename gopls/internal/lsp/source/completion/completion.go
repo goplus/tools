@@ -3424,17 +3424,7 @@ func (c *gopCompleter) quickParse(ctx context.Context, cMu *sync.Mutex, enough *
 			// goxls func alias
 			if tok == token.FUNC {
 				if alias, ok := hasAliasName(id.Name); ok {
-					var noSnip bool
-					switch len(fn.Type.Params.List) {
-					case 0:
-						noSnip = true
-					case 1:
-						if fn.Recv != nil {
-							if _, ok := fn.Type.Params.List[0].Type.(*ast.Ellipsis); ok {
-								noSnip = true
-							}
-						}
-					}
+					noSnip := (len(fn.Type.Params.List) == 0) || c.allowCommand
 					c.items = append(c.items, cloneAliasItem(item, id.Name, alias, 0.0001, noSnip))
 				}
 			}

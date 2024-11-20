@@ -122,6 +122,9 @@ type gopCompleter struct {
 	// also includes our package scope and the universal scope at the
 	// end.
 	scopes []*types.Scope
+
+	// allowCommand is allow Go+ command style function
+	allowCommand bool
 }
 
 // gopFuncInfo holds info about a function object.
@@ -274,6 +277,32 @@ func gopEnclosingFunction(path []ast.Node, info *typesutil.Info) *gopFuncInfo {
 	return nil
 }
 
+// checkAllowCommand check Go+ command style by ident/sel
+func checkAllowCommand(paths []ast.Node) bool {
+	var pos token.Pos
+	switch paths[0].(type) {
+	case *ast.Ident, *ast.SelectorExpr:
+		pos = paths[0].Pos()
+	default:
+		return false
+	}
+	var i int = 1
+	for ; i < len(paths); i++ {
+		if _, ok := paths[i].(*ast.SelectorExpr); !ok {
+			break
+		}
+		pos = paths[i].Pos()
+	}
+	var stmtPos token.Pos
+	for ; i < len(paths); i++ {
+		if _, ok := paths[i].(*ast.ExprStmt); ok {
+			stmtPos = paths[i].Pos()
+			break
+		}
+	}
+	return pos == stmtPos
+}
+
 // GopCompletion returns a list of possible candidates for completion, given a
 // a file and a position.
 //
@@ -404,6 +433,7 @@ func GopCompletion(ctx context.Context, snapshot source.Snapshot, fh source.File
 		methodSetCache: make(map[methodSetKey]*types.MethodSet),
 		mapper:         pgf.Mapper,
 		scopes:         scopes,
+		allowCommand:   checkAllowCommand(path),
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -1288,17 +1318,7 @@ func (c *gopCompleter) selector(ctx context.Context, sel *ast.SelectorExpr) erro
 			// goxls func alias
 			if tok == token.FUNC {
 				if alias, ok := hasAliasName(id.Name); ok {
-					var noSnip bool
-					switch len(fn.Type.Params.List) {
-					case 0:
-						noSnip = true
-					case 1:
-						if fn.Recv != nil {
-							if _, ok := fn.Type.Params.List[0].Type.(*ast.Ellipsis); ok {
-								noSnip = true
-							}
-						}
-					}
+					noSnip := (len(fn.Type.Params.List) == 0) || c.allowCommand
 					c.items = append(c.items, cloneAliasItem(item, id.Name, alias, 0.0001, noSnip))
 				}
 			}
