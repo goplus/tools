@@ -3,15 +3,15 @@ import (
 )
 
 func _() {
-	demo //@item(apkgDemo1, "demo", "Go+ overload funcs\n\n- func()\n- func(n int) int\n- func(n1 int, n2 int)\n- func(s ...string)", "func")
-	Demo //@item(apkgDemo2, "Demo", "Go+ overload funcs\n\n- func()\n- func(n int) int\n- func(n1 int, n2 int)\n- func(s ...string)", "func")
+	demo //@item(apkgDemo1, "demo", "Go+ overload func\n\n- func()\n- func(n int) int\n- func(n1 int, n2 int)\n- func(s ...string)", "func")
+	Demo //@item(apkgDemo2, "Demo", "Go+ overload func\n\n- func()\n- func(n int) int\n- func(n1 int, n2 int)\n- func(s ...string)", "func")
 
 	a.demo //@rank(" //", apkgDemo1, apkgDemo2)
 }
 
 func _() {
-	add //@item(apkgAdd1, "add", "Go+ overload funcs\n\n- func(a int)\n- func(a ...string)", "method")
-	Add //@item(apkgAdd2, "Add", "Go+ overload funcs\n\n- func(a int)\n- func(a ...string)", "method")
+	add //@item(apkgAdd1, "add", "Go+ overload func\n\n- func(a int)\n- func(a ...string)", "method")
+	Add //@item(apkgAdd2, "Add", "Go+ overload func\n\n- func(a int)\n- func(a ...string)", "method")
 
 	var n N
 	n.add //@rank(" //", apkgAdd1, apkgAdd2)

@@ -1,0 +1,19 @@
+package c
+
+type Foo struct {
+}
+
+func (a *Foo) MulInt(b int) *Foo { //@mark(c_foo_mulInt,"MulInt")
+	println "mulInt"
+	return a
+}
+
+func (a *Foo) MulFoo(b *Foo) *Foo { //@mark(c_foo_mulFoo,"MulFoo")
+	println "mulFoo"
+	return a
+}
+
+func (Foo).Mul = (
+	(Foo).MulInt
+	(Foo).MulFoo
+)

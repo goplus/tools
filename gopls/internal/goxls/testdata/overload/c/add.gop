@@ -1,0 +1,10 @@
+package c
+
+func Add = (
+	func(a, b int) int {
+		return a + b
+	}
+	func(a, b string) string {
+		return a + b
+	}
+)

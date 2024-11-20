@@ -23,9 +23,8 @@ func _() {
 	shadowed := 123
 	{
 		shadowed := "hi" //@item(shadowed, "shadowed", "string", "var")
-		_ = shadowed  //@complete("a", shadowed)
+		sha              //@complete("a", shadowed)
 	}
-	_ = shadowed
 }
 
 type IntFoo int //@item(IntFoo, "IntFoo", "int", "type")

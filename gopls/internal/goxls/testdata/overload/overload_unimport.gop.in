@@ -1,0 +1,24 @@
+func _() {
+	c.add //@unimported("add", c_add_unimported)
+	c.mul //@unimported("mul", c_mul_unimported)
+	c.mulInt //@unimported("mulInt", c_mulInt_unimported)
+	c.MulInt //@unimported("MulInt", c_MulInt_unimported)
+}
+
+func _() {
+	d.add //@unimported("add", d_add_unimported)
+	d.mul //@unimported("mul", d_mul_unimported)
+	d.mulInt //@unimported("mulInt", d_mulInt_unimported)
+	d.MulInt //@unimported("MulInt", d_MulInt_unimported)
+}
+
+
+/* c.add */ //@item(c_add_unimported, "add", "Go+ overload func\n\nfunc (from \"golang.org/lsptests/overload/c\")", "func")
+/* c.mul */ //@item(c_mul_unimported, "mul", "Go+ overload func\n\nfunc (from \"golang.org/lsptests/overload/c\")", "func")
+/* c.mulInt */ //@item(c_mulInt_unimported, "mulInt", "Go+ alias func\n\nfunc (from \"golang.org/lsptests/overload/c\")", "func")
+/* c.MulInt */ //@item(c_MulInt_unimported, "MulInt", "func (from \"golang.org/lsptests/overload/c\")", "func")
+
+/* d.add */ //@item(d_add_unimported, "add", "Go+ overload func\n\nfunc (from \"golang.org/lsptests/overload/d\")", "func")
+/* d.mul */ //@item(d_mul_unimported, "mul", "Go+ overload func\n\nfunc (from \"golang.org/lsptests/overload/d\")", "func")
+/* d.mulInt */ //@item(d_mulInt_unimported, "mulInt", "Go+ alias func\n\nfunc (from \"golang.org/lsptests/overload/d\")", "func")
+/* d.MulInt */ //@item(d_MulInt_unimported, "MulInt", "func (from \"golang.org/lsptests/overload/d\")", "func")

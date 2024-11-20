@@ -1189,7 +1189,7 @@ func (c *gopCompleter) selector(ctx context.Context, sel *ast.SelectorExpr) erro
 			return err
 		}
 		path := string(m.PkgPath)
-		gopForEachPackageMember(content, func(tok token.Token, id *ast.Ident, fn *ast.FuncDecl) {
+		gopForEachPackageMember(content, func(tok token.Token, id *ast.Ident, fnType *ast.FuncType, isOverload bool) {
 			if atomic.LoadInt32(&enough) != 0 {
 				return
 			}
@@ -1237,7 +1237,7 @@ func (c *gopCompleter) selector(ctx context.Context, sel *ast.SelectorExpr) erro
 			}
 
 			// For functions, add a parameter snippet.
-			if fn != nil {
+			if fnType != nil {
 				var sn snippet.Builder
 				sn.WriteText(id.Name)
 
@@ -1277,10 +1277,15 @@ func (c *gopCompleter) selector(ctx context.Context, sel *ast.SelectorExpr) erro
 					}
 				}
 
-				paramList("[", "]", typeparams.ForFuncType(fn.Type))
-				paramList("(", ")", fn.Type.Params)
+				paramList("[", "]", typeparams.ForFuncType(fnType))
+				paramList("(", ")", fnType.Params)
 
 				item.snippet = &sn
+			}
+			if isOverload {
+				// ast.OverloadFuncDecl
+				item.isOverload = true
+				item.Detail = "Go+ overload func\n\n" + item.Detail
 			}
 
 			cMu.Lock()
@@ -1288,17 +1293,7 @@ func (c *gopCompleter) selector(ctx context.Context, sel *ast.SelectorExpr) erro
 			// goxls func alias
 			if tok == token.FUNC {
 				if alias, ok := hasAliasName(id.Name); ok {
-					var noSnip bool
-					switch len(fn.Type.Params.List) {
-					case 0:
-						noSnip = true
-					case 1:
-						if fn.Recv != nil {
-							if _, ok := fn.Type.Params.List[0].Type.(*ast.Ellipsis); ok {
-								noSnip = true
-							}
-						}
-					}
+					noSnip := !isOverload && len(fnType.Params.List) == 0
 					c.items = append(c.items, cloneAliasItem(item, id.Name, alias, 0.0001, noSnip))
 				}
 			}
@@ -1310,12 +1305,20 @@ func (c *gopCompleter) selector(ctx context.Context, sel *ast.SelectorExpr) erro
 		return nil
 	}
 
+	// recheck is gop index overload check
+	recheck := newRecheckOverload()
+	for _, path := range paths {
+		m := known[source.PackagePath(path)]
+		if len(m.CompiledGopFiles) > 0 {
+			recheck.pkgs[source.PackagePath(path)] = true
+		}
+	}
 	// Extract the package-level candidates using a quick parse.
-	quickParseGo := c.quickParse(ctx, &cMu, &enough, sel.Sel.Name, relevances, needImport)
+	quickParseGo := c.quickParse(ctx, &cMu, &enough, sel.Sel.Name, relevances, needImport, recheck)
 	var g errgroup.Group
 	for _, path := range paths {
 		m := known[source.PackagePath(path)]
-		for _, uri := range m.CompiledGopFiles { // goxls: TODO - how to handle Go files?
+		for _, uri := range m.CompiledGopFiles {
 			uri := uri
 			g.Go(func() error {
 				return quickParse(uri, m)
@@ -1331,7 +1334,7 @@ func (c *gopCompleter) selector(ctx context.Context, sel *ast.SelectorExpr) erro
 	if err := g.Wait(); err != nil {
 		return err
 	}
-
+	recheck.checkOverload(c)
 	// In addition, we search in the module cache using goimports.
 	ctx, cancel := context.WithCancel(ctx)
 	var mu sync.Mutex
@@ -2427,7 +2430,7 @@ Nodes:
 // TYPE/VAR/CONST/FUNC declaration in the Go source file, based on a
 // quick partial parse. fn is non-nil only for function declarations.
 // The AST position information is garbage.
-func gopForEachPackageMember(content []byte, f func(tok token.Token, id *ast.Ident, fn *ast.FuncDecl)) {
+func gopForEachPackageMember(content []byte, f func(tok token.Token, id *ast.Ident, fnType *ast.FuncType, isOverload bool)) {
 	purged := goxlsastutil.PurgeFuncBodies(content)
 	file, _ := parserutil.ParseFile(token.NewFileSet(), "", purged, 0)
 	for _, decl := range file.Decls {
@@ -2437,15 +2440,38 @@ func gopForEachPackageMember(content []byte, f func(tok token.Token, id *ast.Ide
 				switch spec := spec.(type) {
 				case *ast.ValueSpec: // var/const
 					for _, id := range spec.Names {
-						f(decl.Tok, id, nil)
+						f(decl.Tok, id, nil, false)
 					}
 				case *ast.TypeSpec:
-					f(decl.Tok, spec.Name, nil)
+					f(decl.Tok, spec.Name, nil, false)
 				}
 			}
 		case *ast.FuncDecl:
 			if decl.Recv == nil {
-				f(token.FUNC, decl.Name, decl)
+				f(token.FUNC, decl.Name, decl.Type, false)
+			}
+		case *ast.OverloadFuncDecl:
+			if decl.Recv == nil && ast.IsExported(decl.Name.Name) {
+				var typ *ast.FuncType
+			FindType:
+				for _, expr := range decl.Funcs {
+					switch expr := expr.(type) {
+					case *ast.Ident:
+						if !ast.IsExported(expr.Name) {
+							continue
+						}
+						if obj := file.Scope.Lookup(expr.Name); obj != nil {
+							if d, ok := obj.Decl.(*ast.FuncDecl); ok {
+								typ = d.Type
+								break FindType
+							}
+						}
+					case *ast.FuncLit:
+						typ = expr.Type
+						break FindType
+					}
+				}
+				f(token.FUNC, decl.Name, typ, true)
 			}
 		}
 	}

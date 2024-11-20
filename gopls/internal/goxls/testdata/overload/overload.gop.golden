@@ -108,6 +108,102 @@ func b.GopDemo()
 ```
 
 [`b.GopDemo` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/b#GopDemo)
+-- c_add-hoverdef --
+```go
+func c.Add__1(a string, b string) string
+```
+
+[`c.Add__1` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/c#Add__1)
+-- c_add__0-hoverdef --
+```go
+func c.Add__0(a int, b int) int
+```
+
+[`c.Add__0` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/c#Add__0)
+-- c_foo_mulFoo-hoverdef --
+```go
+func (*c.Foo).MulFoo(b *c.Foo) *c.Foo
+```
+
+[`(c.Foo).MulFoo` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/c#Foo.MulFoo)
+-- c_foo_mulInt-hoverdef --
+```go
+func (*c.Foo).MulInt(b int) *c.Foo
+```
+
+[`(c.Foo).MulInt` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/c#Foo.MulInt)
+-- c_foo_mul__0-hoverdef --
+```go
+func (*c.Foo).MulInt(b int) *c.Foo
+```
+
+[`(c.Foo).MulInt` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/c#Foo.MulInt)
+-- c_foo_mul__1-hoverdef --
+```go
+func (*c.Foo).MulFoo(b *c.Foo) *c.Foo
+```
+
+[`(c.Foo).MulFoo` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/c#Foo.MulFoo)
+-- c_mulFloat-hoverdef --
+```go
+func c.MulFloat(a float64, b float64) float64
+```
+
+[`c.MulFloat` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/c#MulFloat)
+-- c_mulInt-hoverdef --
+```go
+func c.MulInt(a int, b int) int
+```
+
+[`c.MulInt` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/c#MulInt)
+-- c_mul__0-hoverdef --
+```go
+func c.MulInt(a int, b int) int
+```
+
+[`c.MulInt` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/c#MulInt)
+-- c_mul__1-hoverdef --
+```go
+func c.MulFloat(a float64, b float64) float64
+```
+
+[`c.MulFloat` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/c#MulFloat)
+-- d_add__0-hoverdef --
+```go
+func d.Add__0(a int, b int) int
+```
+
+[`d.Add__0` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/d#Add__0)
+-- d_add__1-hoverdef --
+```go
+func d.Add__1(a string, b string) string
+```
+
+[`d.Add__1` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/d#Add__1)
+-- d_foo_mulFoo-hoverdef --
+```go
+func (*d.Foo).MulFoo(b *d.Foo) *d.Foo
+```
+
+[`(d.Foo).MulFoo` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/d#Foo.MulFoo)
+-- d_foo_mulInt-hoverdef --
+```go
+func (*d.Foo).MulInt(b int) *d.Foo
+```
+
+[`(d.Foo).MulInt` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/d#Foo.MulInt)
+-- d_mulFloat-hoverdef --
+```go
+func d.MulFloat(a float64, b float64) float64
+```
+
+[`d.MulFloat` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/d#MulFloat)
+-- d_mulInt-hoverdef --
+```go
+func d.MulInt(a int, b int) int
+```
+
+[`d.MulInt` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/d#MulInt)
 -- pkg_add__0-hoverdef --
 ```go
 func (*pkg.N).Add__0(a int)
