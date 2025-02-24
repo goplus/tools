@@ -43,6 +43,28 @@ func TestMarker(t *testing.T) {
 			},
 		},
 		{
+			filename:    "testdata/test.gop",
+			expectNotes: 13,
+			expectMarkers: map[string]string{
+				"αSimpleMarker": "α",
+				"OffsetMarker":  "β",
+				"RegexMarker":   "γ",
+				"εMultiple":     "ε",
+				"ζMarkers":      "ζ",
+				"ηBlockMarker":  "η",
+				"Declared":      "η",
+				"Comment":       "ι",
+				"LineComment":   "someFunc",
+				"NonIdentifier": "+",
+				"StringMarker":  "\"hello\"",
+			},
+			expectChecks: map[string][]interface{}{
+				"αSimpleMarker": nil,
+				"StringAndInt":  {"Number %d", int64(12)},
+				"Bool":          {true},
+			},
+		},
+		{
 			filename:    "testdata/go.fake.mod",
 			expectNotes: 2,
 			expectMarkers: map[string]string{

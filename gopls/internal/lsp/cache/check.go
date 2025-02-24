@@ -458,6 +458,11 @@ func (b *typeCheckBatch) getImportPackage(ctx context.Context, id PackageID) (pk
 		return types.Unsafe, nil
 	}
 
+	// goxls: Go+ overload data cannot restore by gcimporter.IImportShallow
+	if len(ph.m.CompiledGopFiles) > 0 {
+		return b.checkPackageForImport(ctx, ph)
+	}
+
 	data, err := filecache.Get(exportDataKind, ph.key)
 	if err == filecache.ErrNotFound {
 		// No cached export data: type-check as fast as possible.
@@ -684,7 +689,7 @@ func (b *typeCheckBatch) checkPackageForImport(ctx context.Context, ph *packageH
 
 		// goxls: use Go+
 		cfg.Importer = newGopImporter(cfg.Importer, ph.m.GopImporter(b.fset))
-		opts := &typesutil.Config{Types: pkg, Fset: b.fset, Mod: mod}
+		opts := &typesutil.Config{Types: pkg, Fset: b.fset, Mod: mod, IgnoreFuncBodies: true, UpdateGoTypesOverload: true}
 		check := typesutil.NewChecker(cfg, opts, nil, new(typesutil.Info))
 		_ = check.Files(files, gopFiles) // ignore errors
 	} else {

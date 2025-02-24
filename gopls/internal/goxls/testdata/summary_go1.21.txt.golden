@@ -1,0 +1,25 @@
+-- summary --
+CallHierarchyCount = 0
+CodeLensCount = 4
+CompletionsCount = 18
+CompletionSnippetCount = 12
+UnimportedCompletionsCount = 0
+DeepCompletionsCount = 0
+FuzzyCompletionsCount = 1
+RankedCompletionsCount = 15
+CaseSensitiveCompletionsCount = 0
+DiagnosticsCount = 0
+FoldingRangesCount = 0
+SemanticTokenCount = 0
+SuggestedFixCount = 0
+MethodExtractionCount = 0
+DefinitionsCount = 23
+TypeDefinitionsCount = 1
+HighlightsCount = 0
+InlayHintsCount = 0
+RenamesCount = 0
+PrepareRenamesCount = 0
+SignaturesCount = 47
+LinksCount = 0
+SelectionRangesCount = 0
+

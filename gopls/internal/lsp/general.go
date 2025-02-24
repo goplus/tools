@@ -172,7 +172,7 @@ See https://github.com/golang/go/issues/45732 for more information.`,
 				},
 			},
 			SignatureHelpProvider: &protocol.SignatureHelpOptions{
-				TriggerCharacters: []string{"(", ","},
+				TriggerCharacters: []string{"(", ",", " "},
 			},
 			TextDocumentSync: &protocol.TextDocumentSyncOptions{
 				Change:    protocol.Incremental,

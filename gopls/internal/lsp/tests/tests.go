@@ -24,9 +24,9 @@ import (
 	"testing"
 	"time"
 
-	"golang.org/x/tools/go/expect"
-	"golang.org/x/tools/go/packages"
-	"golang.org/x/tools/go/packages/packagestest"
+	"golang.org/x/tools/gop/expect"
+	"golang.org/x/tools/gop/packages"
+	"golang.org/x/tools/gop/packages/packagestest"
 	"golang.org/x/tools/gopls/internal/lsp/command"
 	"golang.org/x/tools/gopls/internal/lsp/protocol"
 	"golang.org/x/tools/gopls/internal/lsp/safetoken"

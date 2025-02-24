@@ -1,0 +1,5 @@
+package main //@codelens("package main", "run main package","")
+
+func helper() {} // expect no code lens
+
+println "run"

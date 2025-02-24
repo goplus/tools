@@ -15,6 +15,7 @@ import (
 	"strings"
 	"text/scanner"
 
+	gopparser "github.com/goplus/gop/parser"
 	"golang.org/x/mod/modfile"
 )
 
@@ -47,6 +48,18 @@ func Parse(fset *token.FileSet, filename string, content []byte) ([]*Note, error
 			return nil, err
 		}
 		return ExtractGo(fset, file)
+	case ".gop":
+		file, err := gopparser.ParseFile(fset, filename, src, gopparser.ParseComments|gopparser.AllErrors)
+		if file == nil {
+			return nil, err
+		}
+		return ExtractGop(fset, file)
+	case ".gox":
+		file, err := gopparser.ParseFile(fset, filename, src, gopparser.ParseGoPlusClass|gopparser.ParseComments|gopparser.AllErrors)
+		if file == nil {
+			return nil, err
+		}
+		return ExtractGop(fset, file)
 	case ".mod":
 		file, err := modfile.Parse(filename, content, nil)
 		if err != nil {

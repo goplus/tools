@@ -6,18 +6,23 @@ package completion
 
 import (
 	"context"
-	"fmt"
 	"go/types"
 	"strings"
 	"time"
 
 	"github.com/qiniu/x/log"
 	"golang.org/x/tools/gopls/internal/goxls"
+	"golang.org/x/tools/gopls/internal/lsp/protocol"
 	"golang.org/x/tools/gopls/internal/lsp/snippet"
 )
 
 const (
 	showGopStyle bool = true
+)
+
+const (
+	CompletionItemTagAlias    protocol.CompletionItemTag = 2
+	CompletionItemTagOverload protocol.CompletionItemTag = 3
 )
 
 // deepSearch searches a candidate and its subordinate objects for completion
@@ -140,8 +145,6 @@ func (c *gopCompleter) deepSearch(ctx context.Context, start time.Time, deadline
 					c.deepState.enqueue(newCand)
 				})
 			default:
-				// goxls: force cand.addressable = true (TODO)
-				cand.addressable = true
 				c.methodsAndFields(obj.Type(), cand.addressable, cand.imp, func(newCand candidate) {
 					newCand.pathInvokeMask = cand.pathInvokeMask
 					newCand.path = path
@@ -219,14 +222,12 @@ func (c *gopCompleter) addCandidate(ctx context.Context, cand *candidate) {
 func cloneAliasItem(item CompletionItem, name string, alias string, score float64, noSnip bool) CompletionItem {
 	aliasItem := item
 	if showGopStyle {
-		if item.isOverload {
-			aliasItem.Label = fmt.Sprintf("%-30v (Go+ overload)", alias)
-		} else {
-			aliasItem.Label = fmt.Sprintf("%-30v (Go+)", alias)
+		item.Tags = append(item.Tags, CompletionItemTagAlias)
+		if !item.isOverload {
+			aliasItem.Detail = "Go+ alias func\n\n" + aliasItem.Detail
 		}
-	} else {
-		aliasItem.Label = alias
 	}
+	aliasItem.Label = alias
 	aliasItem.InsertText = alias
 	if noSnip {
 		aliasItem.snippet = nil
@@ -251,6 +252,9 @@ func gopDeepCandName(cand *candidate, this *types.Package) (name string, alias s
 		totalLen2 += n
 		if cand.pathInvokeMask&(1<<uint16(i)) > 0 {
 			totalLen += 2
+			if !isFunc(obj) {
+				totalLen2 += 2
+			}
 		}
 	}
 
@@ -261,10 +265,15 @@ func gopDeepCandName(cand *candidate, this *types.Package) (name string, alias s
 
 	for i, obj := range cand.path {
 		buf.WriteString(obj.Name())
-		buf2.WriteString(gopStyleName(obj, this, nil))
+		name, ok := hasGopStyleName(obj, this, nil)
+		buf2.WriteString(name)
 		if cand.pathInvokeMask&(1<<uint16(i)) > 0 {
 			buf.WriteByte('(')
 			buf.WriteByte(')')
+			if !ok {
+				buf2.WriteByte('(')
+				buf2.WriteByte(')')
+			}
 		}
 		buf.WriteByte('.')
 		buf2.WriteByte('.')
@@ -289,17 +298,22 @@ func hasAliasName(name string) (alias string, ok bool) {
 }
 
 func gopStyleName(obj types.Object, this *types.Package, lookup func(pkg *types.Package, name string) *types.Selection) (name string) {
+	name, _ = hasGopStyleName(obj, this, lookup)
+	return
+}
+
+func hasGopStyleName(obj types.Object, this *types.Package, lookup func(pkg *types.Package, name string) *types.Selection) (name string, ok bool) {
 	name = obj.Name()
 	if isFunc(obj) {
 		if pkg := obj.Pkg(); pkg != nil {
 			if pkg != this {
 				if alias, ok := hasAliasName(name); ok {
-					return alias
+					return alias, true
 				}
 			} else if lookup != nil {
 				if alias, ok := hasAliasName(name); ok {
 					if lookup(this, alias) == nil {
-						return alias
+						return alias, true
 					}
 				}
 			}

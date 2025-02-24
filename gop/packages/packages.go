@@ -15,11 +15,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/goplus/gop"
 	"github.com/goplus/gop/ast"
 	"github.com/goplus/gop/parser"
 	"github.com/goplus/gop/scanner"
 	"github.com/goplus/gop/token"
+	gop "github.com/goplus/gop/tool"
 	"github.com/goplus/gop/x/typesutil"
 	"github.com/goplus/mod/gopmod"
 	"golang.org/x/tools/go/packages"
@@ -439,7 +439,7 @@ func addGopFiles(ret *Package, ld *loader, dir string, mode LoadMode, test bool)
 				Scopes:     make(map[ast.Node]*types.Scope),
 				Selections: make(map[*ast.SelectorExpr]*types.Selection),
 				Instances:  make(map[*ast.Ident]types.Instance),
-				Overloads:  make(map[*ast.Ident][]types.Object),
+				Overloads:  make(map[*ast.Ident]types.Object),
 			}
 			cfg := &types.Config{
 				Context: ctx.Types,

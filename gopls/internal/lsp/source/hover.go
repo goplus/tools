@@ -520,10 +520,17 @@ func goHoverInGop(
 				}
 			} else {
 				linkName = fmt.Sprintf("%s.%s", pkg.Name(), obj.Name())
-				if obj.Exported() && pkg.Scope().Lookup(obj.Name()) == obj {
-					linkPath = pkg.Path()
-					anchor = obj.Name()
+				// goxls: support mixed Go/Go+ import package overload
+				if obj.Exported() {
+					if o := pkg.Scope().Lookup(obj.Name()); o != nil && (o == obj || o.String() == obj.String()) {
+						linkPath = pkg.Path()
+						anchor = obj.Name()
+					}
 				}
+				// if obj.Exported() && pkg.Scope().Lookup(obj.Name()) == obj {
+				// 	linkPath = pkg.Path()
+				// 	anchor = obj.Name()
+				// }
 			}
 		}
 	}

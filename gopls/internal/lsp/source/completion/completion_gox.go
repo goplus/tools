@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/cl"
 	"github.com/goplus/gop/printer"
 	"github.com/goplus/gop/scanner"
 	"github.com/goplus/gop/token"
@@ -1050,9 +1049,7 @@ func (c *gopCompleter) selector(ctx context.Context, sel *ast.SelectorExpr) erro
 		log.Println("gopCompleter.selector:", sel.X, ok, "type:", tv.Type)
 	}
 	if ok {
-		// goxls: assume tv.Addressable() => true
-		// c.methodsAndFields(tv.Type, tv.Addressable(), nil, c.deepState.enqueue)
-		c.methodsAndFields(tv.Type, true, nil, c.deepState.enqueue)
+		c.methodsAndFields(tv.Type, tv.Addressable(), nil, c.deepState.enqueue)
 		if goxls.DbgCompletion {
 			log.Println("gopCompleter methodsAndFields:", len(c.items))
 		}
@@ -1434,11 +1431,7 @@ func (c *gopCompleter) lexical(ctx context.Context) error {
 		// position or embedded in interface declarations).
 		// builtinComparable = types.Universe.Lookup("comparable")
 	)
-	var className string
-	if c.file.IsClass {
-		className, _ = cl.ClassNameAndExt(c.filename)
-	}
-
+	classType, isClass := parserutil.GetClassType(c.file, c.filename)
 	// Track seen variables to avoid showing completions for shadowed variables.
 	// This works since we look at scopes from innermost to outermost.
 	seen := make(map[string]struct{})
@@ -1453,7 +1446,7 @@ func (c *gopCompleter) lexical(ctx context.Context) error {
 		for _, name := range scope.Names() {
 			declScope, obj := scope.LookupParent(name, c.pos)
 			// Go+ class
-			if name == className {
+			if isClass && name == classType {
 				c.methodsAndFields(obj.Type(), true, nil, c.deepState.enqueue)
 				continue
 			}

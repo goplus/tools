@@ -155,8 +155,9 @@ func goListDriver(cfg *Config, patterns ...string) (*driverResponse, error) {
 		go func() {
 			var sizes types.Sizes
 			sizes, sizeserr = packagesdriver.GetSizesGolist(ctx, state.cfgInvocation(), cfg.gocmdRunner)
-			// types.SizesFor always returns nil or a *types.StdSizes.
-			response.dr.Sizes, _ = sizes.(*types.StdSizes)
+			if sizes != nil {
+				response.dr.Sizes = &types.StdSizes{WordSize: sizes.Sizeof(types.Typ[types.Int]), MaxAlign: sizes.Alignof(types.Typ[types.Int])}
+			}
 			sizeswg.Done()
 		}()
 	}

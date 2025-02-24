@@ -10,11 +10,11 @@ import (
 	"go/types"
 	"path/filepath"
 
-	"github.com/goplus/gop"
 	"github.com/goplus/gop/ast"
 	"github.com/goplus/gop/parser"
 	"github.com/goplus/gop/scanner"
 	"github.com/goplus/gop/token"
+	gop "github.com/goplus/gop/tool"
 	"github.com/goplus/gop/x/gopenv"
 	"github.com/goplus/mod/gopmod"
 	"golang.org/x/tools/gop/packages"

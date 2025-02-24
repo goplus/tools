@@ -139,7 +139,8 @@ func PathEnclosingInterval(root *ast.File, start, end token.Pos) (path []ast.Nod
 		start, end = end, start
 	}
 
-	if start < root.End() && end > root.Pos() {
+	// goxls: check has package
+	if start < root.End() && (end > root.Pos() || (!root.HasPkgDecl() && end == root.Pos())) {
 		if start == end {
 			end = start + 1 // empty interval => interval of size 1
 		}
@@ -299,8 +300,11 @@ func childrenOf(n ast.Node) []ast.Node {
 
 	case *ast.File:
 		// TODO test: Doc
-		children = append(children,
-			tok(n.Package, len("package")))
+		// goxls: check has package
+		if n.HasPkgDecl() {
+			children = append(children,
+				tok(n.Package, len("package")))
+		}
 
 	case *ast.ForStmt:
 		children = append(children,

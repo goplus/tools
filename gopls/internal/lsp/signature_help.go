@@ -39,6 +39,9 @@ func (s *Server) signatureHelp(ctx context.Context, params *protocol.SignatureHe
 			ActiveParameter: uint32(activeParameter),
 		}, nil
 	case source.Go:
+		if params.Context != nil && params.Context.TriggerCharacter == " " {
+			return nil, nil
+		}
 		info, activeParameter, err = source.SignatureHelp(ctx, snapshot, fh, params.Position)
 	default:
 		return nil, nil

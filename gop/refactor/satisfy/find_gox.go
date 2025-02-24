@@ -375,9 +375,16 @@ func (f *Finder) gopStmt(s ast.Stmt) {
 
 	case *ast.SendStmt:
 		ch := f.gopExpr(s.Chan)
-		val := f.gopExpr(s.Value)
-		f.assign(coreType(ch).(*types.Chan).Elem(), val)
-
+		switch t := coreType(ch).(type) {
+		case *types.Chan:
+			val := f.gopExpr(s.Values[0])
+			f.assign(t.Elem(), val)
+		case *types.Slice:
+			for _, v := range s.Values {
+				val := f.gopExpr(v)
+				f.assign(t.Elem(), val)
+			}
+		}
 	case *ast.IncDecStmt:
 		f.gopExpr(s.X)
 

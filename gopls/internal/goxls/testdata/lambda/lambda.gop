@@ -1,0 +1,11 @@
+var myString string //@myString
+
+func onStart(fn func(int) int) { //@onStart
+	println fn(100), myString //@godef("myString", myString)
+}
+
+onStart xparam => { //@xparam,godef("onStart",onStart)
+	return xparam * xparam //@godef("xparam",xparam)
+}
+
+onStart yparam => yparam //@yparam,godef("yparam",yparam)

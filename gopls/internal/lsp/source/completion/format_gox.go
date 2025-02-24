@@ -12,8 +12,8 @@ import (
 	"go/types"
 	"strings"
 
+	"github.com/goplus/gogen"
 	"github.com/goplus/gop/ast"
-	"github.com/goplus/gox"
 	"golang.org/x/tools/gopls/internal/lsp/protocol"
 	"golang.org/x/tools/gopls/internal/lsp/safetoken"
 	"golang.org/x/tools/gopls/internal/lsp/snippet"
@@ -119,10 +119,11 @@ func (c *gopCompleter) item(ctx context.Context, cand candidate) (CompletionItem
 			prefix = "<-" + prefix
 		}
 	}
-	var isOverload bool
 	var (
-		suffix   string
-		funcType = obj.Type()
+		isOverload bool
+		tags       []protocol.CompletionItemTag
+		suffix     string
+		funcType   = obj.Type()
 	)
 Suffixes:
 	for _, mod := range cand.mods {
@@ -138,7 +139,7 @@ Suffixes:
 					funcType = sig.Results().At(0).Type()
 				}
 				detail = "func" + s.Format()
-				if _, objs := gox.CheckSigFuncExObjects(sig); len(objs) > 0 {
+				if _, objs := gogen.CheckSigFuncExObjects(sig); len(objs) > 0 {
 					isOverload = true
 					var buf bytes.Buffer
 					buf.WriteString("Go+ overload funcs\n")
@@ -153,7 +154,7 @@ Suffixes:
 						buf.WriteString("\n- func" + s.Format())
 					}
 					if showGopStyle {
-						label = fmt.Sprintf("%-30v (Go+ overload)", label)
+						tags = append(tags, CompletionItemTagOverload)
 					}
 					detail = buf.String()
 				}
@@ -240,6 +241,7 @@ Suffixes:
 		AdditionalTextEdits: protocolEdits,
 		Detail:              detail,
 		Kind:                kind,
+		Tags:                tags,
 		Score:               cand.score,
 		Depth:               len(cand.path),
 		snippet:             &snip,

@@ -9,7 +9,6 @@ import (
 	"fmt"
 
 	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/cl"
 	"github.com/goplus/gop/token"
 	"github.com/goplus/gop/x/typesutil"
 	"golang.org/x/tools/gopls/internal/goxls/parserutil"
@@ -26,10 +25,7 @@ func GopDocumentSymbols(ctx context.Context, snapshot Snapshot, fh FileHandle) (
 		return nil, fmt.Errorf("getting file for GopDocumentSymbols: %w", err)
 	}
 	file := pgf.File
-	var classType string
-	if file.IsClass {
-		classType, _ = cl.ClassNameAndExt(fh.URI().Filename())
-	}
+	classType, _ := parserutil.GetClassType(file, fh.URI().Filename())
 	// Build symbols for file declarations. When encountering a declaration with
 	// errors (typically because positions are invalid), we skip the declaration
 	// entirely. VS Code fails to show any symbols if one of the top-level

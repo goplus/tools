@@ -31,22 +31,56 @@ func GopSignatureHelp(ctx context.Context, snapshot Snapshot, fh FileHandle, pos
 	if err != nil {
 		return nil, 0, 0, err
 	}
+	start, err := pgf.PositionPos(protocol.Position{0, 0})
+	if err != nil {
+		return nil, 0, 0, err
+	}
+	var offset = int(pos - start)
+	npos := pos
+	if len(pgf.File.Code) >= offset {
+		if pgf.File.Code[offset] == '\n' {
+			offset--
+			npos--
+		}
+		for offset > 0 {
+			if pgf.File.Code[offset] != ' ' {
+				break
+			}
+			offset--
+			npos--
+		}
+	}
+
 	// Find a call expression surrounding the query position.
 	var callExpr *ast.CallExpr
-	path, _ := astutil.PathEnclosingInterval(pgf.File, pos, pos)
+	path, _ := astutil.PathEnclosingInterval(pgf.File, npos, npos)
 	if path == nil {
 		return nil, 0, 0, fmt.Errorf("cannot find node enclosing position")
 	}
-
+	var cmdObj types.Object
+	var cmdIdent *ast.Ident
 FindCall:
-	for _, node := range path {
+	for i, node := range path {
 		switch node := node.(type) {
+		case *ast.Ident:
+			if i == 0 && pos >= node.End() {
+				if o := pkg.GopTypesInfo().ObjectOf(node); o != nil {
+					if _, ok := o.Type().(*types.Signature); ok {
+						cmdObj, cmdIdent = o, node
+					}
+				}
+			}
 		case *ast.CallExpr:
-			if pos >= node.Lparen && pos <= node.Rparen {
+			if node.IsCommand() {
+				if pos >= node.Fun.End() && npos <= node.NoParenEnd {
+					callExpr = node
+					break FindCall
+				}
+			} else if pos >= node.Lparen && pos <= node.Rparen {
 				callExpr = node
 				break FindCall
 			}
-		case *ast.FuncLit, *ast.FuncType:
+		case *ast.FuncLit, *ast.FuncType, *ast.LambdaExpr, *ast.LambdaExpr2:
 			// The user is within an anonymous function,
 			// which may be the parameter to the *ast.CallExpr.
 			// Don't show signature help in this case.
@@ -57,7 +91,7 @@ FindCall:
 			}
 		}
 	}
-	if callExpr == nil || callExpr.Fun == nil {
+	if (callExpr == nil || callExpr.Fun == nil) && cmdObj == nil {
 		return nil, 0, 0, fmt.Errorf("cannot find an enclosing function")
 	}
 
@@ -66,14 +100,20 @@ FindCall:
 	// Get the object representing the function, if available.
 	// There is no object in certain cases such as calling a function returned by
 	// a function (e.g. "foo()()").
+	var obj types.Object
 	var ident *ast.Ident
-	switch t := callExpr.Fun.(type) {
-	case *ast.Ident:
-		ident = t
-	case *ast.SelectorExpr:
-		ident = t.Sel
+	if callExpr != nil {
+		switch t := callExpr.Fun.(type) {
+		case *ast.Ident:
+			ident = t
+		case *ast.SelectorExpr:
+			ident = t.Sel
+		}
+		obj = pkg.GopTypesInfo().ObjectOf(ident)
+	} else {
+		ident = cmdIdent
+		obj = cmdObj
 	}
-	obj := pkg.GopTypesInfo().ObjectOf(ident)
 
 	// Handle builtin functions separately.
 	if obj, ok := obj.(*types.Builtin); ok {
@@ -81,7 +121,12 @@ FindCall:
 	}
 
 	// Get the type information for the function being called.
-	sigType := pkg.GopTypesInfo().TypeOf(callExpr.Fun)
+	var sigType types.Type
+	if callExpr != nil {
+		sigType = pkg.GopTypesInfo().TypeOf(callExpr.Fun)
+	} else {
+		sigType = cmdObj.Type()
+	}
 	if sigType == nil {
 		return nil, 0, 0, fmt.Errorf("cannot get type for Fun %[1]T (%[1]v)", callExpr.Fun)
 	}
@@ -93,7 +138,7 @@ FindCall:
 
 	activeParam := gopActiveParameter(callExpr, sig.Params().Len(), sig.Variadic(), pos)
 
-	objs, overloads := pkg.GopTypesInfo().Overloads[ident]
+	_, overloads := pkg.GopTypesInfo().OverloadOf(ident)
 
 	var (
 		name    string
@@ -101,7 +146,7 @@ FindCall:
 	)
 	if obj != nil {
 		d, err := HoverDocForObject(ctx, snapshot, pkg.FileSet(), obj)
-		if err != nil && !overloads {
+		if err != nil && overloads == nil {
 			return nil, 0, 0, err
 		}
 		name = obj.Name()
@@ -127,10 +172,10 @@ FindCall:
 		}, nil
 	}
 
-	if overloads {
+	if overloads != nil {
 		activeSignature := 0
-		infos := make([]protocol.SignatureInformation, len(objs))
-		for i, o := range objs {
+		infos := make([]protocol.SignatureInformation, len(overloads))
+		for i, o := range overloads {
 			if o.Name() == obj.Name() {
 				activeSignature = i
 			}
@@ -167,11 +212,14 @@ func gopBuiltinSignature(ctx context.Context, snapshot Snapshot, callExpr *ast.C
 }
 
 func gopActiveParameter(callExpr *ast.CallExpr, numParams int, variadic bool, pos token.Pos) (activeParam int) {
-	if len(callExpr.Args) == 0 {
+	if callExpr == nil || len(callExpr.Args) == 0 {
 		return 0
 	}
 	// First, check if the position is even in the range of the arguments.
 	start, end := callExpr.Lparen, callExpr.Rparen
+	if callExpr.IsCommand() {
+		start, end = callExpr.Fun.Pos(), callExpr.NoParenEnd
+	}
 	if !(start <= pos && pos <= end) {
 		return 0
 	}

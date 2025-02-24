@@ -1,0 +1,19 @@
+-- myString-hoverdef --
+```go
+var myString string
+```
+
+@myString
+
+-- onStart-hoverdef --
+```go
+func onStart(fn func(int) int)
+```
+-- xparam-hoverdef --
+```go
+var xparam int
+```
+-- yparam-hoverdef --
+```go
+var yparam int
+```

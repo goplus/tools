@@ -1,0 +1,4 @@
+package b
+
+func GopDemo() { //@mark(b_gopdemo,"GopDemo")
+}

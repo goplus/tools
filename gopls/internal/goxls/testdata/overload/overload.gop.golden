@@ -1,0 +1,140 @@
+-- Add__0-hoverdef --
+```go
+func (*N).Add__0(a int)
+```
+-- Add__1-hoverdef --
+```go
+func (*N).Add__1(a ...string)
+```
+-- Demo__0-hoverdef --
+```go
+func Demo__0()
+```
+
+[`main.Demo__0` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload#Demo__0)
+-- Demo__1-hoverdef --
+```go
+func Demo__1(n int) int
+```
+
+[`main.Demo__1` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload#Demo__1)
+-- Demo__2-hoverdef --
+```go
+func Demo__2(n1 int, n2 int)
+```
+
+[`main.Demo__2` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload#Demo__2)
+-- Demo__3-hoverdef --
+```go
+func Demo__3(s ...string)
+```
+
+[`main.Demo__3` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload#Demo__3)
+-- a_add__0-hoverdef --
+```go
+func (*a.N).Add__0(a int)
+```
+
+[`(a.N).Add__0` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/a#N.Add__0)
+-- a_add__1-hoverdef --
+```go
+func (*a.N).Add__1(a ...string)
+```
+
+[`(a.N).Add__1` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/a#N.Add__1)
+-- a_demo__0-hoverdef --
+```go
+func a.Demo__0()
+```
+
+[`a.Demo__0` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/a#Demo__0)
+-- a_demo__1-hoverdef --
+```go
+func a.Demo__1(n int) int
+```
+
+[`a.Demo__1` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/a#Demo__1)
+-- a_demo__2-hoverdef --
+```go
+func a.Demo__2(n1 int, n2 int)
+```
+
+[`a.Demo__2` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/a#Demo__2)
+-- a_demo__3-hoverdef --
+```go
+func a.Demo__3(s ...string)
+```
+
+[`a.Demo__3` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/a#Demo__3)
+-- b_add__0-hoverdef --
+```go
+func (*b.N).Add__0(a int)
+```
+
+[`(b.N).Add__0` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/b#N.Add__0)
+-- b_add__1-hoverdef --
+```go
+func (*b.N).Add__1(a ...string)
+```
+
+[`(b.N).Add__1` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/b#N.Add__1)
+-- b_demo__0-hoverdef --
+```go
+func b.Demo__0()
+```
+
+[`b.Demo__0` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/b#Demo__0)
+-- b_demo__1-hoverdef --
+```go
+func b.Demo__1(n int) int
+```
+
+[`b.Demo__1` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/b#Demo__1)
+-- b_demo__2-hoverdef --
+```go
+func b.Demo__2(n1 int, n2 int)
+```
+
+[`b.Demo__2` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/b#Demo__2)
+-- b_demo__3-hoverdef --
+```go
+func b.Demo__3(s ...string)
+```
+
+[`b.Demo__3` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/b#Demo__3)
+-- b_gopdemo-hoverdef --
+```go
+func b.GopDemo()
+```
+
+[`b.GopDemo` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/b#GopDemo)
+-- pkg_add__0-hoverdef --
+```go
+func (*pkg.N).Add__0(a int)
+```
+
+[`(pkg.N).Add__0` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/pkg#N.Add__0)
+-- pkg_add__1-hoverdef --
+```go
+func (*pkg.N).Add__1(a ...string)
+```
+
+[`(pkg.N).Add__1` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/pkg#N.Add__1)
+-- pkg_demo__0-hoverdef --
+```go
+func pkg.Demo__0()
+```
+
+[`pkg.Demo__0` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/pkg#Demo__0)
+-- pkg_demo__1-hoverdef --
+```go
+func pkg.Demo__1(n int) int
+```
+
+[`pkg.Demo__1` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/pkg#Demo__1)
+-- pkg_demo__3-hoverdef --
+```go
+func pkg.Demo__3(s ...string)
+```
+
+[`pkg.Demo__3` on pkg.go.dev](https://pkg.go.dev/golang.org/lsptests/overload/pkg#Demo__3)
