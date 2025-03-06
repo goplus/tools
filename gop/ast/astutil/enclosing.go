@@ -8,6 +8,7 @@ package astutil
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 
 	"github.com/goplus/gop/ast"
@@ -191,7 +192,17 @@ func childrenOf(n ast.Node) []ast.Node {
 		if node == n { // push n
 			return true // recur
 		}
-		if node != nil { // push child
+		// We can't simply use `node != nil` here because of Go's interface nil checking behavior:
+		//
+		// When a typed nil pointer is converted to an interface:
+		//
+		//  var ident *ast.Ident
+		//  var node ast.Node = ident
+		//  fmt.Println(node == nil) // prints false
+		//
+		// The interface value is not nil (it contains type information but a nil value).
+		// See https://github.com/goplus/builder/pull/1402 for a real-world example.
+		if !isNilNode(node) { // push child
 			children = append(children, node)
 		}
 		return false // no recursion
@@ -643,4 +654,15 @@ func NodeDescription(n ast.Node) string {
 
 	}
 	panic(fmt.Sprintf("unexpected node type: %T", n))
+}
+
+func isNilNode(n ast.Node) bool {
+	if n == nil {
+		return true
+	}
+	v := reflect.ValueOf(n)
+	if v.Kind() == reflect.Ptr {
+		return v.IsNil()
+	}
+	return false
 }
