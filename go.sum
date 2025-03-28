@@ -1,7 +1,7 @@
-github.com/goplus/gogen v1.16.6 h1:Zwv18HoTbPDk8s2ajxgVeqZE5i4/GMV722KHl6GS8Yk=
-github.com/goplus/gogen v1.16.6/go.mod h1:6TQYbabXDF9LCdDkOOzHmfg1R4ENfXQ3XpHa9RhTSD8=
-github.com/goplus/gop v1.3.1 h1:oU+hhLQsvr8Od++z6mLlKeuRPKcgGjc4OyGE1vfRVD0=
-github.com/goplus/gop v1.3.1/go.mod h1:BnMzJG+PYoOWjKT4Q7CwxLUTBRnTFuuxW8W4O3vq/TU=
+github.com/goplus/gogen v1.16.9 h1:BRNAsRzdyMcLBOLUe6+suVMmOe+D2HLfF7mAkS4/QW4=
+github.com/goplus/gogen v1.16.9/go.mod h1:6TQYbabXDF9LCdDkOOzHmfg1R4ENfXQ3XpHa9RhTSD8=
+github.com/goplus/gop v1.3.7 h1:en4/32AI75EQy8xnkkb6kMdF+yHaNUdEcoYeSOb3nGk=
+github.com/goplus/gop v1.3.7/go.mod h1:JjUJ8q9mzDxai6zbWheGv08qAK1WtRKCvIG8cisjOG8=
 github.com/goplus/mod v0.13.17 h1:aWp14xosENrh7t0/0qcIejDmQEiTgI3ou2+KoLDlSlE=
 github.com/goplus/mod v0.13.17/go.mod h1:XlHf8mnQ4QkRDX14Of2tpywuHDd+JVpPStvh3egog+0=
 github.com/qiniu/x v1.13.12 h1:UyAwja6dgKUOYWZMzzc02wLodwnZ7wmK/0XzRd0e78g=
