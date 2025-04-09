@@ -4,7 +4,7 @@ go 1.18 // tagx:compat 1.16
 
 require (
 	github.com/goplus/gop v1.3.8
-	github.com/goplus/mod v0.13.17
+	github.com/goplus/mod v0.13.18
 	github.com/yuin/goldmark v1.7.8
 	golang.org/x/mod v0.20.0
 	golang.org/x/net v0.29.0
@@ -14,5 +14,5 @@ require (
 
 require (
 	github.com/goplus/gogen v1.16.9 // indirect
-	github.com/qiniu/x v1.13.12 // indirect
+	github.com/qiniu/x v1.13.13 // indirect
 )
