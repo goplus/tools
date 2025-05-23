@@ -1490,10 +1490,11 @@ func loadExportsFromFiles(ctx context.Context, env *ProcessEnv, dir string, incl
 	}
 
 	var pkgName string
+	var gopPackage bool
 	var exports []string
 	fset := token.NewFileSet()
-	// goxls: scope list for check GopPackage
-	var scopes []*ast.Scope
+	// goxls: decls list for check GopPackage
+	var decls []ast.Decl
 	for _, fi := range files {
 		select {
 		case <-ctx.Done():
@@ -1518,12 +1519,15 @@ func loadExportsFromFiles(ctx context.Context, env *ProcessEnv, dir string, incl
 			// x_test package. We want internal test files only.
 			continue
 		}
-		// goxls: save scope
-		scopes = append(scopes, f.Scope)
+		// goxls: save decls
+		decls = append(decls, f.Decls...)
+		if !gopPackage {
+			gopPackage = findGopPackage(f.Decls)
+		}
 		pkgName = f.Name.Name
 	}
 	// goxls: export Go+ style func, startLower and overload (GopPackage)
-	exports = gopExports(scopes)
+	exports = gopExports(decls, gopPackage)
 	if env.Logf != nil {
 		sortedExports := append([]string(nil), exports...)
 		sort.Strings(sortedExports)

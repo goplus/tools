@@ -5,6 +5,8 @@
 package parserutil
 
 import (
+	goparser "go/parser"
+
 	"github.com/goplus/gop/ast"
 	"github.com/goplus/gop/parser"
 	"github.com/goplus/gop/token"
@@ -23,7 +25,7 @@ const (
 	ParseFull = parser.AllErrors | parser.ParseComments
 
 	// SkipObjectResolution - don't resolve identifiers to objects - see ParseFile
-	SkipObjectResolution = parser.SkipObjectResolution
+	SkipObjectResolution = parser.Mode(goparser.SkipObjectResolution)
 )
 
 func ParseFile(fset *token.FileSet, filename string, src interface{}, mode parser.Mode) (f *ast.File, err error) {
