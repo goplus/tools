@@ -16,9 +16,11 @@ import (
 
 	"github.com/goplus/gop/ast"
 	"github.com/goplus/gop/token"
+	xlog "github.com/qiniu/x/log"
 	"golang.org/x/tools/go/types/objectpath"
 	"golang.org/x/tools/gop/ast/astutil"
 	"golang.org/x/tools/gopls/internal/bug"
+	"golang.org/x/tools/gopls/internal/goxls"
 	"golang.org/x/tools/gopls/internal/goxls/parserutil"
 	"golang.org/x/tools/gopls/internal/lsp/protocol"
 	"golang.org/x/tools/gopls/internal/lsp/safetoken"
@@ -306,7 +308,7 @@ func gopRenameOrdinary(ctx context.Context, snapshot Snapshot, f FileHandle, pp 
 		for obj := range targets {
 			objects = append(objects, obj)
 		}
-		editMap, _, err := renameObjects(ctx, snapshot, newName, pkg, objects...)
+		editMap, _, err := gopRenameObjects(ctx, snapshot, newName, pkg, objects...)
 		return editMap, err
 	}
 
@@ -365,6 +367,64 @@ func gopRenameOrdinary(ctx context.Context, snapshot Snapshot, f FileHandle, pp 
 	// Apply the renaming to the (initial) object.
 	declPkgPath := PackagePath(obj.Pkg().Path())
 	return renameExported(ctx, snapshot, pkgs, declPkgPath, declObjPath, newName)
+}
+
+// renameObjects computes the edits to the type-checked syntax package pkg
+// required to rename a set of target objects to newName.
+//
+// It also returns the set of objects that were found (due to
+// corresponding methods and embedded fields) to require renaming as a
+// consequence of the requested renamings.
+//
+// It returns an error if the renaming would cause a conflict.
+func gopRenameObjects(ctx context.Context, snapshot Snapshot, newName string, pkg Package, targets ...types.Object) (map[span.URI][]diff.Edit, map[types.Object]bool, error) {
+	r := renamer{
+		pkg:          pkg,
+		objsToUpdate: make(map[types.Object]bool),
+		from:         targets[0].Name(),
+		to:           newName,
+	}
+
+	// A renaming initiated at an interface method indicates the
+	// intention to rename abstract and concrete methods as needed
+	// to preserve assignability.
+	// TODO(adonovan): pull this into the caller.
+	for _, obj := range targets {
+		if obj, ok := obj.(*types.Func); ok {
+			recv := obj.Type().(*types.Signature).Recv()
+			if recv != nil && types.IsInterface(recv.Type().Underlying()) {
+				r.changeMethods = true
+				break
+			}
+		}
+	}
+
+	// Check that the renaming of the identifier is ok.
+	for _, obj := range targets {
+		if goxls.DbgRename {
+			xlog.Printf("renameObjects: %T, %s => %s\n", obj, r.from, r.to)
+		}
+		r.gopCheck(obj)
+		if len(r.conflicts) > 0 {
+			if goxls.DbgRename {
+				xlog.Println("renameObjects:", r.conflicts)
+				xlog.SingleStack()
+			}
+			// Stop at first error.
+			return nil, nil, fmt.Errorf("%s", strings.Join(r.conflicts, "\n"))
+		}
+	}
+
+	editMap, err := r.update()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Remove initial targets so that only 'consequences' remain.
+	for _, obj := range targets {
+		delete(r.objsToUpdate, obj)
+	}
+	return editMap, r.objsToUpdate, nil
 }
 
 // gopRenamePackageName renames package declarations, imports, and go.mod files.
