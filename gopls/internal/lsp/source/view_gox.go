@@ -129,8 +129,8 @@ func (pgf *ParsedGopFile) PosLocation(start, end token.Pos) (protocol.Location, 
 	return pgf.Mapper.PosLocation(pgf.Tok, start, end)
 }
 
-func (m *Metadata) LoadGopMod() {
-	m.gopMod_, _ = gop.LoadMod(m.LoadDir)
+func (m *Metadata) LoadGopMod(mod *gopmod.Module) {
+	m.gopMod_ = mod
 }
 
 func (m *Metadata) GopMod_() *gopmod.Module {
