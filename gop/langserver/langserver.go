@@ -59,6 +59,9 @@ func lookupCmd(cmd string) string {
 	return cmd
 }
 
+// Get returns the language server client, initializing it on first call.
+// Prefers xgo command over gop for improved functionality.
+// Falls back to gop for backward compatibility.
 func Get() langserver.Client {
 	onceInit.Do(func() {
 		cmd := lookupCmd("xgo")
