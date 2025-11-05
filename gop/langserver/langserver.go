@@ -61,7 +61,10 @@ func lookupCmd(cmd string) string {
 
 func Get() langserver.Client {
 	onceInit.Do(func() {
-		cmd := lookupCmd("gop")
+		cmd := lookupCmd("xgo")
+		if _, err := exec.LookPath(cmd); err != nil {
+			cmd = lookupCmd("gop")
+		}
 		ls = langserver.ServeAndDial(nil, cmd, "serve", "-v")
 	})
 	return ls
