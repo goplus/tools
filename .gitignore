@@ -5,3 +5,4 @@ go.work*
 log.txt
 
 .DS_Store
+*/.vscode/
