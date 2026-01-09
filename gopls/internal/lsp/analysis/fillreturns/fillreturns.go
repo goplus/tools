@@ -17,6 +17,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/goplus/xgo/x/typesutil"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/ast/astutil"
 	"golang.org/x/tools/gopls/internal/goxls"
@@ -283,7 +284,7 @@ var wrongReturnNumRegexes = []*regexp.Regexp{
 	regexp.MustCompile(`not enough arguments to return`),
 }
 
-func FixesError(err types.Error) bool {
+func FixesError(err typesutil.Error) bool {
 	msg := strings.TrimSpace(err.Msg)
 	for _, rx := range wrongReturnNumRegexes {
 		if rx.MatchString(msg) {

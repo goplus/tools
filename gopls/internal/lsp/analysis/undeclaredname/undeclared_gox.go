@@ -38,7 +38,7 @@ func gopRun(pass *analysis.Pass) (interface{}, error) {
 	return nil, nil
 }
 
-func gopRunForError(pass *analysis.Pass, err types.Error) {
+func gopRunForError(pass *analysis.Pass, err typesutil.Error) {
 	var name string
 	for _, prefix := range undeclaredNamePrefixes {
 		if !strings.HasPrefix(err.Msg, prefix) {

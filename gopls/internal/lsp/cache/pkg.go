@@ -54,7 +54,7 @@ type syntaxPackage struct {
 	compiledNongenGoFiles []*source.ParsedGoFile // goxls: use NongenGoFiles
 	diagnostics           []*source.Diagnostic
 	parseErrors           []scanner.ErrorList
-	typeErrors            []types.Error
+	typeErrors            []typesutil.Error
 	types                 *types.Package
 	typesInfo             *types.Info
 	importMap             map[PackagePath]*types.Package
@@ -180,7 +180,7 @@ func (p *Package) GetParseErrors() []scanner.ErrorList {
 	return p.pkg.parseErrors
 }
 
-func (p *Package) GetTypeErrors() []types.Error {
+func (p *Package) GetTypeErrors() []typesutil.Error {
 	return p.pkg.typeErrors
 }
 

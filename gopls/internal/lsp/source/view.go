@@ -988,7 +988,7 @@ type Package interface {
 
 	// Results of type checking:
 	GetTypes() *types.Package
-	GetTypeErrors() []types.Error
+	GetTypeErrors() []typesutil.Error
 	GetTypesInfo() *types.Info
 	DependencyTypes(PackagePath) *types.Package // nil for indirect dependency of no consequence
 	DiagnosticsForFile(ctx context.Context, s Snapshot, uri span.URI) ([]*Diagnostic, error)

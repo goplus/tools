@@ -14,12 +14,12 @@ import (
 	"go/parser"
 	"go/scanner"
 	"go/token"
-	"go/types"
 	"log"
 	"regexp"
 	"strconv"
 	"strings"
 
+	"github.com/goplus/xgo/x/typesutil"
 	"golang.org/x/tools/go/packages"
 	"golang.org/x/tools/gopls/internal/bug"
 	"golang.org/x/tools/gopls/internal/lsp/command"
@@ -430,16 +430,12 @@ func suggestedAnalysisFixes(diag *gobDiagnostic, kinds []protocol.CodeActionKind
 	return fixes
 }
 
-func typeErrorData(pkg *syntaxPackage, terr types.Error) (typesinternal.ErrorCode, protocol.Location, error) {
-	ecode, start, end, ok := typesinternal.ReadGo116ErrorData(terr)
-	if !ok {
-		start, end = terr.Pos, terr.Pos
-		ecode = 0
-	}
+func typeErrorData(pkg *syntaxPackage, terr typesutil.Error) (typesinternal.ErrorCode, protocol.Location, error) {
+	ecode, start, end := typesinternal.ErrorCode(terr.Code), terr.Pos, terr.End
 	// go/types may return invalid positions in some cases, such as
 	// in errors on tokens missing from the syntax tree.
 	if !start.IsValid() {
-		return 0, protocol.Location{}, fmt.Errorf("type error (%q, code %d, go116=%t) without position", terr.Msg, ecode, ok)
+		return 0, protocol.Location{}, fmt.Errorf("type error (%q, code %d) without position", terr.Msg, ecode)
 	}
 	// go/types errors retain their FileSet.
 	// Sanity-check that we're using the right one.
