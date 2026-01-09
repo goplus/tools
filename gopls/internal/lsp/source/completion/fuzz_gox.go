@@ -9,8 +9,8 @@ import (
 	"go/types"
 	"strings"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/token"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/token"
 	"golang.org/x/tools/gopls/internal/lsp/protocol"
 )
 

@@ -8,7 +8,7 @@ import (
 	"context"
 	"go/types"
 
-	"github.com/goplus/gop/ast"
+	"github.com/goplus/xgo/ast"
 )
 
 // builtinArgKind determines the expected object kind for a builtin

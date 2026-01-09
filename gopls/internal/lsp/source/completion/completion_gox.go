@@ -19,12 +19,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/printer"
-	"github.com/goplus/gop/scanner"
-	"github.com/goplus/gop/token"
-	"github.com/goplus/gop/x/typesutil"
-	"github.com/goplus/mod/gopmod"
+	"github.com/goplus/mod/xgomod"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/printer"
+	"github.com/goplus/xgo/scanner"
+	"github.com/goplus/xgo/token"
+	"github.com/goplus/xgo/x/typesutil"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/gop/ast/astutil"
 	"golang.org/x/tools/gopls/internal/goxls"
@@ -1432,7 +1432,7 @@ func (c *gopCompleter) lexical(ctx context.Context) error {
 		// position or embedded in interface declarations).
 		// builtinComparable = types.Universe.Lookup("comparable")
 	)
-	classType, _, err := parserutil.GetClassType(c.file, c.filename, func() (*gopmod.Module, error) {
+	classType, _, err := parserutil.GetClassType(c.file, c.filename, func() (*xgomod.Module, error) {
 		return c.snapshot.GopModForFile(ctx, c.fh.URI())
 	})
 	if err != nil {

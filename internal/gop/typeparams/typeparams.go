@@ -7,8 +7,8 @@ package typeparams
 import (
 	"go/types"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/x/typesutil"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/x/typesutil"
 	"golang.org/x/tools/internal/typeparams"
 )
 

@@ -5,13 +5,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/goplus/gop/token"
-	"github.com/goplus/mod/gopmod"
+	"github.com/goplus/mod/xgomod"
+	"github.com/goplus/xgo/token"
 	"golang.org/x/tools/gopls/internal/goxls/parserutil"
 	"golang.org/x/tools/gopls/internal/lsp/source"
 )
 
-func parseGopImports(ctx context.Context, mod *gopmod.Module, s *snapshot, files []source.FileHandle, seen map[string]bool) error {
+func parseGopImports(ctx context.Context, mod *xgomod.Module, s *snapshot, files []source.FileHandle, seen map[string]bool) error {
 	pgfs, err := s.view.parseCache.parseGopFiles(ctx, mod, token.NewFileSet(), parserutil.ParseHeader, false, files...)
 	if err != nil { // e.g. context cancellation
 		return err
@@ -23,7 +23,7 @@ func parseGopImports(ctx context.Context, mod *gopmod.Module, s *snapshot, files
 			seen[path] = true
 		}
 		if strings.HasSuffix(pgf.URI.Filename(), "_test.gox") {
-			seen["github.com/goplus/gop/test"] = true
+			seen["github.com/goplus/xgo/test"] = true
 			seen["testing"] = true
 		}
 	}

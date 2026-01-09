@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"github.com/goplus/gogen"
-	"github.com/goplus/gop/ast"
+	"github.com/goplus/xgo/ast"
 	"golang.org/x/tools/gopls/internal/lsp/protocol"
 	"golang.org/x/tools/gopls/internal/lsp/safetoken"
 	"golang.org/x/tools/gopls/internal/lsp/snippet"

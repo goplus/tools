@@ -43,8 +43,8 @@ import (
 	"go/token"
 	"go/types"
 
-	gopast "github.com/goplus/gop/ast"
-	"github.com/goplus/gop/x/typesutil"
+	gopast "github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/x/typesutil"
 	"golang.org/x/tools/go/ast/astutil"
 	"golang.org/x/tools/go/types/typeutil"
 	"golang.org/x/tools/internal/typeparams"

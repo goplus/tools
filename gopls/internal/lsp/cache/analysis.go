@@ -28,10 +28,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	gopast "github.com/goplus/gop/ast"
+	gopast "github.com/goplus/xgo/ast"
 	gopanalysis "golang.org/x/tools/gop/analysis"
 
-	"github.com/goplus/gop/x/typesutil"
+	"github.com/goplus/xgo/x/typesutil"
 
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/go/analysis"

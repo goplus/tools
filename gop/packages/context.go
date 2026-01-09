@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/goplus/mod/gopmod"
+	"github.com/goplus/mod/xgomod"
 	"golang.org/x/tools/go/packages"
 )
 
@@ -28,12 +28,12 @@ type Context struct {
 	Types *types.Context
 
 	mutex sync.Mutex
-	mods  map[string]*gopmod.Module
+	mods  map[string]*xgomod.Module
 }
 
 // NewContext creates a new packages.Load context.
 func NewContext(ctx *types.Context) *Context {
-	mods := make(map[string]*gopmod.Module)
+	mods := make(map[string]*xgomod.Module)
 	return &Context{Types: ctx, mods: mods}
 }
 
@@ -42,7 +42,7 @@ var (
 )
 
 // LoadModFrom loads a Go+ module from gop.mod or go.mod file.
-func (p *Context) LoadModFrom(gomod string) (ret *gopmod.Module, err error) {
+func (p *Context) LoadModFrom(gomod string) (ret *xgomod.Module, err error) {
 	p.mutex.Lock()
 	ret, ok := p.mods[gomod]
 	p.mutex.Unlock()
@@ -58,20 +58,20 @@ func (p *Context) LoadModFrom(gomod string) (ret *gopmod.Module, err error) {
 }
 
 // loadModFrom loads a Go+ module from gop.mod or go.mod file.
-func loadModFrom(gomod string) (ret *gopmod.Module, err error) {
+func loadModFrom(gomod string) (ret *xgomod.Module, err error) {
 	if ret, err = doLoadModFrom(gomod); err == nil {
 		ret.ImportClasses()
 	}
 	return
 }
 
-func doLoadModFrom(gomod string) (ret *gopmod.Module, err error) {
+func doLoadModFrom(gomod string) (ret *xgomod.Module, err error) {
 	dir, _ := filepath.Split(gomod)
-	return gopmod.LoadFrom(gomod, dir+"gop.mod")
+	return xgomod.LoadFrom(gomod, dir+"gop.mod")
 }
 
 // LoadMod loads a Go+ module.
-func (p *Context) LoadMod(mod *Module) *gopmod.Module {
+func (p *Context) LoadMod(mod *Module) *xgomod.Module {
 	if mod != nil {
 		if r := mod.Replace; r != nil {
 			mod = r
@@ -82,5 +82,5 @@ func (p *Context) LoadMod(mod *Module) *gopmod.Module {
 			}
 		}
 	}
-	return gopmod.Default
+	return xgomod.Default
 }

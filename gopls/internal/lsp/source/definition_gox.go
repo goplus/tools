@@ -10,8 +10,8 @@ import (
 	"go/types"
 	"log"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/token"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/token"
 	"golang.org/x/tools/gopls/internal/bug"
 	"golang.org/x/tools/gopls/internal/goxls"
 	"golang.org/x/tools/gopls/internal/goxls/parserutil"

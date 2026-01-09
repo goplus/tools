@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"go/types"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/token"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/token"
 	"golang.org/x/tools/gopls/internal/lsp/protocol"
 	"golang.org/x/tools/gopls/internal/lsp/snippet"
 	"golang.org/x/tools/gopls/internal/lsp/source"

@@ -8,8 +8,8 @@ import (
 	"context"
 	"go/token"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/mod/gopmod"
+	"github.com/goplus/mod/xgomod"
+	"github.com/goplus/xgo/ast"
 	"golang.org/x/tools/gop/goputil"
 	"golang.org/x/tools/gopls/internal/bug"
 	"golang.org/x/tools/gopls/internal/goxls/parserutil"
@@ -51,7 +51,7 @@ func gopMetadataChanges(ctx context.Context, lockedSnapshot *snapshot, oldFH, ne
 
 	// check locked snapshot mod for uri
 	ids := lockedSnapshot.meta.ids[oldFH.URI()]
-	var mod *gopmod.Module
+	var mod *xgomod.Module
 	for _, id := range ids {
 		if m := lockedSnapshot.meta.metadata[id]; m != nil {
 			mod = m.GopMod_()

@@ -12,7 +12,7 @@ import (
 	"go/types"
 	"path/filepath"
 
-	"github.com/goplus/gop/ast"
+	"github.com/goplus/xgo/ast"
 	"golang.org/x/tools/gop/ast/astutil"
 	"golang.org/x/tools/gopls/internal/bug"
 	"golang.org/x/tools/gopls/internal/lsp/protocol"

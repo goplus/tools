@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/goplus/gop/ast"
+	"github.com/goplus/xgo/ast"
 	"golang.org/x/tools/gop/analysis"
 	"golang.org/x/tools/gop/analysis/analysistest"
 	"golang.org/x/tools/gop/analysis/internal/checker"

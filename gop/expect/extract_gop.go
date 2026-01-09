@@ -5,8 +5,8 @@
 package expect
 
 import (
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/token"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/token"
 )
 
 func ExtractGop(fset *token.FileSet, file *ast.File) ([]*Note, error) {

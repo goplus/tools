@@ -16,9 +16,9 @@ import (
 
 	goparser "go/parser"
 
-	"github.com/goplus/gop/parser"
-	"github.com/goplus/gop/token"
-	"github.com/goplus/mod/gopmod"
+	"github.com/goplus/mod/xgomod"
+	"github.com/goplus/xgo/parser"
+	"github.com/goplus/xgo/token"
 	"github.com/qiniu/x/log"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/gopls/internal/goxls"
@@ -33,7 +33,7 @@ import (
 // The resulting slice has an entry for every given file handle, though some
 // entries may be nil if there was an error reading the file (in which case the
 // resulting error will be non-nil).
-func (c *parseCache) startParseGop(mod *gopmod.Module, mode parser.Mode, purgeFuncBodies bool, fhs ...source.FileHandle) ([]*memoize.Promise, error) {
+func (c *parseCache) startParseGop(mod *xgomod.Module, mode parser.Mode, purgeFuncBodies bool, fhs ...source.FileHandle) ([]*memoize.Promise, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -159,7 +159,7 @@ func (c *parseCache) startParseGop(mod *gopmod.Module, mode parser.Mode, purgeFu
 //
 // If parseGopFiles returns an error, it still returns a slice,
 // but with a nil entry for each file that could not be parsed.
-func (c *parseCache) parseGopFiles(ctx context.Context, mod *gopmod.Module, fset *token.FileSet, mode parser.Mode, purgeFuncBodies bool, fhs ...source.FileHandle) ([]*source.ParsedGopFile, error) {
+func (c *parseCache) parseGopFiles(ctx context.Context, mod *xgomod.Module, fset *token.FileSet, mode parser.Mode, purgeFuncBodies bool, fhs ...source.FileHandle) ([]*source.ParsedGopFile, error) {
 	pgfs := make([]*source.ParsedGopFile, len(fhs))
 
 	// Temporary fall-back for 32-bit systems, where reservedForParsing is too

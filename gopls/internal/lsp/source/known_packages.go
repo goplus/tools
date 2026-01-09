@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	gopparser "github.com/goplus/gop/parser"
+	gopparser "github.com/goplus/xgo/parser"
 	"golang.org/x/tools/gopls/internal/goxls/parserutil"
 	"golang.org/x/tools/internal/event"
 	"golang.org/x/tools/internal/imports"

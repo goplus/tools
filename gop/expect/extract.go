@@ -15,7 +15,7 @@ import (
 	"strings"
 	"text/scanner"
 
-	gopparser "github.com/goplus/gop/parser"
+	gopparser "github.com/goplus/xgo/parser"
 	"golang.org/x/mod/modfile"
 )
 

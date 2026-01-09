@@ -12,11 +12,11 @@ import (
 	goplsastutil "golang.org/x/tools/gopls/internal/astutil"
 	"golang.org/x/tools/gopls/internal/goxls"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/parser"
-	"github.com/goplus/gop/scanner"
-	"github.com/goplus/gop/token"
-	"github.com/goplus/mod/gopmod"
+	"github.com/goplus/mod/xgomod"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/parser"
+	"github.com/goplus/xgo/scanner"
+	"github.com/goplus/xgo/token"
 	"github.com/qiniu/x/log"
 	"golang.org/x/tools/gopls/internal/goxls/parserutil"
 	"golang.org/x/tools/gopls/internal/lsp/protocol"
@@ -41,19 +41,19 @@ func (s *snapshot) ParseGop(ctx context.Context, fh source.FileHandle, mode pars
 	return pgfs[0], nil
 }
 
-func (s *snapshot) GopModForFile(ctx context.Context, uri span.URI) (*gopmod.Module, error) {
+func (s *snapshot) GopModForFile(ctx context.Context, uri span.URI) (*xgomod.Module, error) {
 	m, err := s.MetadataForFile(ctx, uri)
 	if err != nil {
 		return nil, err
 	}
 	if len(m) == 0 {
-		return gopmod.Default, nil
+		return xgomod.Default, nil
 	}
 	return m[0].GopMod_(), nil
 }
 
 // parseGopImpl parses the Go+ source file whose content is provided by fh.
-func parseGopImpl(ctx context.Context, mod *gopmod.Module, fset *token.FileSet, fh source.FileHandle, mode parser.Mode, purgeFuncBodies bool) (*source.ParsedGopFile, error) {
+func parseGopImpl(ctx context.Context, mod *xgomod.Module, fset *token.FileSet, fh source.FileHandle, mode parser.Mode, purgeFuncBodies bool) (*source.ParsedGopFile, error) {
 	/*
 		// goxls: don't check Go+ files by extension
 		ext := filepath.Ext(fh.URI().Filename())
@@ -76,7 +76,7 @@ func parseGopImpl(ctx context.Context, mod *gopmod.Module, fset *token.FileSet, 
 // ParseGopSrc parses a buffer of Go+ source, repairing the tree if necessary.
 //
 // The provided ctx is used only for logging.
-func ParseGopSrc(ctx context.Context, mod *gopmod.Module, fset *token.FileSet, uri span.URI, src []byte, mode parser.Mode, purgeFuncBodies bool) (res *source.ParsedGopFile, fixes []fixType) {
+func ParseGopSrc(ctx context.Context, mod *xgomod.Module, fset *token.FileSet, uri span.URI, src []byte, mode parser.Mode, purgeFuncBodies bool) (res *source.ParsedGopFile, fixes []fixType) {
 	if purgeFuncBodies {
 		src = goplsastutil.PurgeFuncBodies(src)
 	}

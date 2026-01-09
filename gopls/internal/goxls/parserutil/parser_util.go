@@ -7,11 +7,11 @@ package parserutil
 import (
 	goparser "go/parser"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/parser"
-	"github.com/goplus/gop/token"
-	"github.com/goplus/gop/tool"
-	"github.com/goplus/mod/gopmod"
+	"github.com/goplus/mod/xgomod"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/parser"
+	"github.com/goplus/xgo/token"
+	"github.com/goplus/xgo/tool"
 )
 
 const (
@@ -32,7 +32,7 @@ func ParseFile(fset *token.FileSet, filename string, src interface{}, mode parse
 	return ParseFileEx(nil, fset, filename, src, mode)
 }
 
-func ParseFileEx(mod *gopmod.Module, fset *token.FileSet, filename string, src interface{}, mode parser.Mode) (f *ast.File, err error) {
+func ParseFileEx(mod *xgomod.Module, fset *token.FileSet, filename string, src interface{}, mode parser.Mode) (f *ast.File, err error) {
 	if filename != "" {
 		conf := parser.Config{
 			Mode: mode,
@@ -50,8 +50,8 @@ func ParseFileEx(mod *gopmod.Module, fset *token.FileSet, filename string, src i
 	return
 }
 
-func GetClassType(file *ast.File, filename string, getMod func() (*gopmod.Module, error)) (classType string, isTest bool, err error) {
-	var mod *gopmod.Module
+func GetClassType(file *ast.File, filename string, getMod func() (*xgomod.Module, error)) (classType string, isTest bool, err error) {
+	var mod *xgomod.Module
 	if file.IsProj {
 		mod, err = getMod()
 		if err != nil {

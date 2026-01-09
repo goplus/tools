@@ -9,8 +9,8 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/token"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/token"
 )
 
 // sortImports sorts runs of consecutive import lines in import blocks in f.

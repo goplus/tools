@@ -15,13 +15,13 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/parser"
-	"github.com/goplus/gop/scanner"
-	"github.com/goplus/gop/token"
-	gop "github.com/goplus/gop/tool"
-	"github.com/goplus/gop/x/typesutil"
-	"github.com/goplus/mod/gopmod"
+	"github.com/goplus/mod/xgomod"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/parser"
+	"github.com/goplus/xgo/scanner"
+	"github.com/goplus/xgo/token"
+	gop "github.com/goplus/xgo/tool"
+	"github.com/goplus/xgo/x/typesutil"
 	"golang.org/x/tools/go/packages"
 	"golang.org/x/tools/gop/goputil"
 	"golang.org/x/tools/internal/gop/packagesinternal"
@@ -362,7 +362,7 @@ func hasGoTestFile(goFiles []string) bool {
 }
 
 func isAutogen(fname string) bool {
-	return strings.HasPrefix(fname, "gop_autogen")
+	return strings.HasPrefix(fname, "xgo_autogen")
 }
 
 func isGoTestFile(fname string) bool {
@@ -391,7 +391,7 @@ func addGopFiles(ret *Package, ld *loader, dir string, mode LoadMode, test bool)
 	}
 	fsetTemp := token.NewFileSet()
 	pkgName := ret.Name
-	var mod *gopmod.Module
+	var mod *xgomod.Module
 	var once sync.Once
 	for _, e := range entries {
 		fname := e.Name()
@@ -487,7 +487,7 @@ type loader struct {
 //
 // Because files are scanned in parallel, the token.Pos
 // positions of the resulting ast.Files are not ordered.
-func (ld *loader) parseFiles(ret *Package, mod *gopmod.Module, filenames []string) []*ast.File {
+func (ld *loader) parseFiles(ret *Package, mod *xgomod.Module, filenames []string) []*ast.File {
 	var wg sync.WaitGroup
 	n := len(filenames)
 	ctx := ld.ctx
@@ -528,7 +528,7 @@ func (ld *loader) parseFiles(ret *Package, mod *gopmod.Module, filenames []strin
 // the number of parallel I/O calls per process.
 var ioLimit = make(chan bool, 20)
 
-func (ld *loader) parseFile(filename string, mod *gopmod.Module) (f *ast.File, err error) {
+func (ld *loader) parseFile(filename string, mod *xgomod.Module) (f *ast.File, err error) {
 	var src []byte
 	for f, contents := range ld.Overlay {
 		if sameFile(f, filename) {

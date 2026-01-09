@@ -15,7 +15,7 @@ import (
 	"go/types"
 	"log"
 
-	"github.com/goplus/gop/ast"
+	"github.com/goplus/xgo/ast"
 	"golang.org/x/tools/go/analysis/passes/findcall"
 	"golang.org/x/tools/gop/analysis"
 )

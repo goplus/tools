@@ -18,9 +18,9 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/format"
-	"github.com/goplus/gop/token"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/format"
+	"github.com/goplus/xgo/token"
 	"golang.org/x/text/unicode/runenames"
 	"golang.org/x/tools/go/types/typeutil"
 	"golang.org/x/tools/gop/ast/astutil"

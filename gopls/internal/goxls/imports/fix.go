@@ -22,9 +22,9 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/parser"
-	"github.com/goplus/gop/token"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/parser"
+	"github.com/goplus/xgo/token"
 	"golang.org/x/tools/gop/ast/astutil"
 	"golang.org/x/tools/gopls/internal/goxls/parserutil"
 	"golang.org/x/tools/internal/event"
@@ -111,11 +111,11 @@ func parseOtherFiles(fset *token.FileSet, srcDir, filename string) []*ast.File {
 		if !considerTests && strings.HasSuffix(fi.Name(), "_test.go") {
 			continue
 		}
-		// goxls: skip gop_autogen.go/gop_autogen_test.go/gop_autogen2_test.go
-		if fi.Name() == "gop_autogen.go" {
+		// goxls: skip xgo_autogen.go/xgo_autogen_test.go/xgo_autogen2_test.go
+		if fi.Name() == "xgo_autogen.go" {
 			continue
 		}
-		if considerTests && (fi.Name() == "gop_autogen_test.go" || fi.Name() == "gop_autogen2_test.go") {
+		if considerTests && (fi.Name() == "xgo_autogen_test.go" || fi.Name() == "xgo_autogen2_test.go") {
 			continue
 		}
 

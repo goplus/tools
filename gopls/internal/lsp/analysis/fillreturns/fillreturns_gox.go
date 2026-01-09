@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"go/types"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/format"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/format"
 	"github.com/qiniu/x/log"
 	"golang.org/x/tools/gop/analysis"
 	"golang.org/x/tools/gop/ast/astutil"

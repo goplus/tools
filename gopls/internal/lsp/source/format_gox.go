@@ -8,14 +8,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"log"
+	"path/filepath"
 	"strings"
 
-	"path/filepath"
-
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/format"
-	"github.com/goplus/gop/parser"
-	"github.com/goplus/gop/token"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/format"
+	"github.com/goplus/xgo/parser"
+	"github.com/goplus/xgo/token"
 	"golang.org/x/tools/gop/goputil"
 	"golang.org/x/tools/gopls/internal/goxls/imports"
 	"golang.org/x/tools/gopls/internal/goxls/parserutil"
@@ -34,6 +34,8 @@ func FormatGop(ctx context.Context, snapshot Snapshot, fh FileHandle) ([]protoco
 	if IsGenerated(ctx, snapshot, fh.URI()) {
 		return nil, fmt.Errorf("can't format %q: file is generated", fh.URI().Filename())
 	}
+
+	log.Printf("[DEBUG] FormatGop: formatting %q", fh.URI().Filename())
 
 	pgf, err := snapshot.ParseGop(ctx, fh, parserutil.ParseFull)
 	if err != nil {
@@ -60,6 +62,7 @@ func FormatGop(ctx context.Context, snapshot Snapshot, fh FileHandle) ([]protoco
 		return nil, err
 	}
 	formatted := buf.String()
+	log.Printf("[DEBUG] FormatGop: formatted %q: %s", fh.URI().Filename(), formatted[:100])
 
 	// Apply additional formatting, if any is supported. Currently, the only
 	// supported additional formatter is gofumpt.
@@ -85,6 +88,7 @@ func FormatGop(ctx context.Context, snapshot Snapshot, fh FileHandle) ([]protoco
 			return nil, err
 		}
 		formatted = string(b)
+		log.Printf("[DEBUG] FormatGop: formatted %q: %s", fh.URI().Filename(), formatted[:100])
 	}
 	return gopComputeTextEdits(ctx, snapshot, pgf, formatted)
 }
