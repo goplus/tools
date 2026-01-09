@@ -16,12 +16,12 @@ func FileKind(fext string) Kind {
 	switch fext {
 	case ".gop":
 		return FileGopNormal
-	case ".spx", ".rdx", ".gox", ".gmx":
+	case ".spx", ".rdx", ".yap", ".gox", ".gmx":
 		return FileGopClass
 	}
 	return FileUnknown
 }
 
 func Exts() string {
-	return "gop,spx,rdx,gox,gmx"
+	return "gop,spx,rdx,yap,gox,gmx"
 }
