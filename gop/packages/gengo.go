@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/goplus/gop/env"
+	"github.com/goplus/xgo/env"
 	"golang.org/x/tools/gop/langserver"
 )
 
@@ -66,7 +66,7 @@ func buildPattern(pattern []string) (gopPattern []string, allPattern []string) {
 	for dir := range dirs {
 		gopPattern = append(gopPattern, dir)
 		if fileMode {
-			allPattern = append(allPattern, filePrefix+dir+"/gop_autogen.go")
+			allPattern = append(allPattern, filePrefix+dir+"/xgo_autogen.go")
 		} else {
 			allPattern = append(allPattern, dir)
 		}

@@ -14,8 +14,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/x/typesutil"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/x/typesutil"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/go/types/objectpath"
 	"golang.org/x/tools/gopls/internal/bug"

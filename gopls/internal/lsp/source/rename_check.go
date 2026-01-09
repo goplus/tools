@@ -183,7 +183,7 @@ func (r *renamer) checkInPackageBlock(from types.Object) {
 	}
 
 	// Check for conflicts between package block and all file blocks.
-	// goxls: skip gop_autogen*.go
+	// goxls: skip xgo_autogen*.go
 	// for _, f := range r.pkg.GetSyntax() {
 	for _, f := range r.pkg.GetNongenSyntax() {
 		fileScope := r.pkg.GetTypesInfo().Scopes[f]
@@ -395,7 +395,7 @@ func forEachLexicalRef(pkg Package, obj types.Object, fn func(id *ast.Ident, blo
 		return true
 	}
 
-	// goxls: skip gop_autogen*.go
+	// goxls: skip xgo_autogen*.go
 	// for _, f := range pkg.GetSyntax() {
 	for _, f := range pkg.GetNongenSyntax() {
 		ast.Inspect(f, visit)

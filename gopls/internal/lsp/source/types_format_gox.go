@@ -7,8 +7,8 @@ package source
 import (
 	"go/types"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/token"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/token"
 	"golang.org/x/tools/gopls/internal/bug"
 	"golang.org/x/tools/internal/gop/typeparams"
 )

@@ -13,7 +13,7 @@ import (
 	"go/types"
 	"sort"
 
-	"github.com/goplus/gop/x/typesutil"
+	"github.com/goplus/xgo/x/typesutil"
 	"golang.org/x/tools/go/types/objectpath"
 	"golang.org/x/tools/gopls/internal/lsp/frob"
 	"golang.org/x/tools/gopls/internal/lsp/protocol"

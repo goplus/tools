@@ -28,10 +28,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	gopast "github.com/goplus/gop/ast"
+	gopast "github.com/goplus/xgo/ast"
 	gopanalysis "golang.org/x/tools/gop/analysis"
 
-	"github.com/goplus/gop/x/typesutil"
+	"github.com/goplus/xgo/x/typesutil"
 
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/go/analysis"
@@ -993,7 +993,7 @@ func (an *analysisNode) typeCheck(parsed []*source.ParsedGoFile, gopParsed []*so
 
 			// Suppress type errors in files with parse errors
 			// as parser recovery can be quite lossy (#59888).
-			typeError := e.(types.Error)
+			typeError := e.(typesutil.Error)
 			for _, p := range parsed {
 				if p.ParseErr != nil && source.NodeContains(p.File, typeError.Pos) {
 					return
@@ -1152,7 +1152,7 @@ type analysisPackage struct {
 	export         []byte      // encoding of types.Package
 	deepExportHash source.Hash // reflexive transitive hash of export data
 	typesInfo      *types.Info
-	typeErrors     []types.Error
+	typeErrors     []typesutil.Error
 	typesSizes     types.Sizes
 
 	// goxls: Go+

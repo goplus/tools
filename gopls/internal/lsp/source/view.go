@@ -18,10 +18,10 @@ import (
 	"go/types"
 	"io"
 
-	goxast "github.com/goplus/gop/ast"
-	goxparser "github.com/goplus/gop/parser"
-	"github.com/goplus/gop/x/typesutil"
-	"github.com/goplus/mod/gopmod"
+	"github.com/goplus/mod/xgomod"
+	goxast "github.com/goplus/xgo/ast"
+	goxparser "github.com/goplus/xgo/parser"
+	"github.com/goplus/xgo/x/typesutil"
 	goxanalysis "golang.org/x/tools/gop/analysis"
 	goximports "golang.org/x/tools/gopls/internal/goxls/imports"
 
@@ -261,7 +261,7 @@ type Snapshot interface {
 
 	// GopModForFile returns gop module for gop file by uri.
 	// It returns an error if the context was cancelled.
-	GopModForFile(ctx context.Context, uri span.URI) (*gopmod.Module, error)
+	GopModForFile(ctx context.Context, uri span.URI) (*xgomod.Module, error)
 }
 
 // NarrowestMetadataForFile returns metadata for the narrowest package
@@ -569,7 +569,7 @@ type Metadata struct {
 	// goxls: Go+ files
 	GopFiles         []span.URI
 	CompiledGopFiles []span.URI
-	gopMod_          *gopmod.Module // see GopMod_()
+	gopMod_          *xgomod.Module // see GopMod_()
 	gopImporter      types.Importer
 
 	ForTest       PackagePath // q in a "p [q.test]" package, else ""
@@ -988,7 +988,7 @@ type Package interface {
 
 	// Results of type checking:
 	GetTypes() *types.Package
-	GetTypeErrors() []types.Error
+	GetTypeErrors() []typesutil.Error
 	GetTypesInfo() *types.Info
 	DependencyTypes(PackagePath) *types.Package // nil for indirect dependency of no consequence
 	DiagnosticsForFile(ctx context.Context, s Snapshot, uri span.URI) ([]*Diagnostic, error)

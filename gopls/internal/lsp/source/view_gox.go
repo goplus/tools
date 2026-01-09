@@ -10,13 +10,13 @@ import (
 	"go/types"
 	"path/filepath"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/parser"
-	"github.com/goplus/gop/scanner"
-	"github.com/goplus/gop/token"
-	gop "github.com/goplus/gop/tool"
-	"github.com/goplus/gop/x/gopenv"
-	"github.com/goplus/mod/gopmod"
+	"github.com/goplus/mod/xgomod"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/parser"
+	"github.com/goplus/xgo/scanner"
+	"github.com/goplus/xgo/token"
+	gop "github.com/goplus/xgo/tool"
+	"github.com/goplus/xgo/x/xgoenv"
 	"golang.org/x/tools/gop/packages"
 	"golang.org/x/tools/gopls/internal/lsp/protocol"
 	"golang.org/x/tools/gopls/internal/lsp/safetoken"
@@ -36,12 +36,12 @@ func (m *Metadata) Dir() string {
 }
 
 /*
-// CompiledNongenGoFiles returns all Go files excluding "gop_autogen*.go".
+// CompiledNongenGoFiles returns all Go files excluding "xgo_autogen*.go".
 func (m *Metadata) CompiledNongenGoFiles() []span.URI {
 	ret := make([]span.URI, 0, len(m.CompiledGoFiles))
 	for _, f := range m.CompiledGoFiles {
 		fname := filepath.Base(f.Filename())
-		if strings.HasPrefix(fname, "gop_autogen") {
+		if strings.HasPrefix(fname, "xgo_autogen") {
 			continue
 		}
 		ret = append(ret, f)
@@ -133,7 +133,7 @@ func (m *Metadata) LoadGopMod() {
 	m.gopMod_, _ = gop.LoadMod(m.LoadDir)
 }
 
-func (m *Metadata) GopMod_() *gopmod.Module {
+func (m *Metadata) GopMod_() *xgomod.Module {
 	if m.gopMod_ == nil {
 		m.gopMod_ = packages.Default.LoadMod(m.Module)
 	}
@@ -142,7 +142,7 @@ func (m *Metadata) GopMod_() *gopmod.Module {
 
 func (m *Metadata) GopImporter(fset *token.FileSet) types.Importer {
 	if m.gopImporter == nil {
-		m.gopImporter = gop.NewImporter(m.GopMod_(), gopenv.Get(), fset)
+		m.gopImporter = gop.NewImporter(m.GopMod_(), xgoenv.Get(), fset)
 	}
 	return m.gopImporter
 }

@@ -483,7 +483,7 @@ func (s *Server) diagnosePkgs(ctx context.Context, snapshot source.Snapshot, toD
 			bug.Reportf("go/analysis reported diagnostics for the builtin file: %v", adiags)
 			continue
 		}
-		if fname := filepath.Base(uri.Filename()); strings.HasPrefix(fname, "gop_autogen") { // goxls: Ignore gop_autogen files
+		if fname := filepath.Base(uri.Filename()); strings.HasPrefix(fname, "xgo_autogen") { // goxls: Ignore xgo_autogen files
 			continue
 		}
 		tdiags := pkgDiags[uri]
@@ -522,7 +522,7 @@ func (s *Server) diagnosePkgs(ctx context.Context, snapshot source.Snapshot, toD
 			bug.Reportf("type checking reported diagnostics for the builtin file: %v", diags)
 			continue
 		}
-		if fname := filepath.Base(uri.Filename()); strings.HasPrefix(fname, "gop_autogen") { // goxls: Ignore gop_autogen files
+		if fname := filepath.Base(uri.Filename()); strings.HasPrefix(fname, "xgo_autogen") { // goxls: Ignore xgo_autogen files
 			continue
 		}
 		s.storeDiagnostics(snapshot, uri, typeCheckSource, diags, true)

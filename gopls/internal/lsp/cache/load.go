@@ -452,7 +452,7 @@ func buildMetadata(updates map[PackageID]*source.Metadata, pkg *packages.Package
 
 	// goxls: use NongenGoFiles
 	for _, filename := range pkg.CompiledGoFiles {
-		if fname := filepath.Base(filename); strings.HasPrefix(fname, "gop_autogen") {
+		if fname := filepath.Base(filename); strings.HasPrefix(fname, "xgo_autogen") {
 			continue
 		}
 		uri := span.URIFromPath(filename)

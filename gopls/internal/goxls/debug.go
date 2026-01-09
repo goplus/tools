@@ -5,8 +5,8 @@
 package goxls
 
 import (
-	"github.com/goplus/gop/cl"
-	"github.com/goplus/gop/x/typesutil"
+	"github.com/goplus/xgo/cl"
+	"github.com/goplus/xgo/x/typesutil"
 )
 
 type DbgFlags int

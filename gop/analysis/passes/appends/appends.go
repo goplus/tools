@@ -10,7 +10,7 @@ import (
 	_ "embed"
 	"go/types"
 
-	"github.com/goplus/gop/ast"
+	"github.com/goplus/xgo/ast"
 	"golang.org/x/tools/go/analysis/passes/appends"
 	"golang.org/x/tools/gop/analysis"
 	"golang.org/x/tools/gop/analysis/passes/inspect"

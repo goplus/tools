@@ -32,7 +32,7 @@ import (
 	"golang.org/x/tools/gopls/internal/span"
 	"golang.org/x/tools/internal/event"
 
-	gopast "github.com/goplus/gop/ast"
+	gopast "github.com/goplus/xgo/ast"
 )
 
 // References returns a list of all references (sorted with

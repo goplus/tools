@@ -10,10 +10,10 @@ import (
 	"go/types"
 	"strings"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/format"
-	"github.com/goplus/gop/token"
-	"github.com/goplus/gop/x/typesutil"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/format"
+	"github.com/goplus/xgo/token"
+	"github.com/goplus/xgo/x/typesutil"
 	"golang.org/x/tools/gop/analysis"
 	"golang.org/x/tools/gop/ast/astutil"
 	"golang.org/x/tools/gopls/internal/lsp/safetoken"
@@ -38,7 +38,7 @@ func gopRun(pass *analysis.Pass) (interface{}, error) {
 	return nil, nil
 }
 
-func gopRunForError(pass *analysis.Pass, err types.Error) {
+func gopRunForError(pass *analysis.Pass, err typesutil.Error) {
 	var name string
 	for _, prefix := range undeclaredNamePrefixes {
 		if !strings.HasPrefix(err.Msg, prefix) {

@@ -7,7 +7,7 @@ package infertypeargs
 import (
 	"go/types"
 
-	"github.com/goplus/gop/token"
+	"github.com/goplus/xgo/token"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/gop/ast/inspector"
 )

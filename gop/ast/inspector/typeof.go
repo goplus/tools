@@ -12,7 +12,7 @@ package inspector
 import (
 	"math"
 
-	"github.com/goplus/gop/ast"
+	"github.com/goplus/xgo/ast"
 )
 
 const (

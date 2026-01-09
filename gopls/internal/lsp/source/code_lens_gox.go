@@ -12,8 +12,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/parser"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/parser"
 	"golang.org/x/tools/gopls/internal/goxls"
 	"golang.org/x/tools/gopls/internal/goxls/parserutil"
 	"golang.org/x/tools/gopls/internal/lsp/command"

@@ -20,7 +20,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	gopast "github.com/goplus/gop/ast"
+	gopast "github.com/goplus/xgo/ast"
 	"golang.org/x/text/unicode/runenames"
 	"golang.org/x/tools/go/ast/astutil"
 	"golang.org/x/tools/go/types/typeutil"

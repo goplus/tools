@@ -13,9 +13,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/goplus/gop/format"
-	"github.com/goplus/gop/parser"
-	"github.com/goplus/gop/token"
+	"github.com/goplus/xgo/format"
+	"github.com/goplus/xgo/parser"
+	"github.com/goplus/xgo/token"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/gop/ast/astutil"
 	"golang.org/x/tools/gopls/internal/bug"

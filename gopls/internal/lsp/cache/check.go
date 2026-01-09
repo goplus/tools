@@ -20,8 +20,8 @@ import (
 	"sync"
 	"sync/atomic"
 
-	gopast "github.com/goplus/gop/ast"
-	"github.com/goplus/gop/x/typesutil"
+	gopast "github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/x/typesutil"
 	"golang.org/x/mod/module"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/go/ast/astutil"
@@ -1663,7 +1663,7 @@ func doTypeCheck(ctx context.Context, b *typeCheckBatch, ph *packageHandle) (*sy
 	}
 
 	onError := func(e error) {
-		pkg.typeErrors = append(pkg.typeErrors, e.(types.Error))
+		pkg.typeErrors = append(pkg.typeErrors, e.(typesutil.Error))
 	}
 	cfg := b.typesConfig(ctx, inputs, onError)
 
@@ -1928,8 +1928,8 @@ func missingPkgError(from PackageID, pkgPath string, moduleMode bool) error {
 }
 
 type extendedError struct {
-	primary     types.Error
-	secondaries []types.Error
+	primary     typesutil.Error
+	secondaries []typesutil.Error
 }
 
 func (e extendedError) Error() string {
@@ -1948,7 +1948,7 @@ func (e extendedError) Error() string {
 //
 // If supportsRelatedInformation is false, the secondary is instead embedded as
 // additional context in the primary error.
-func expandErrors(errs []types.Error, supportsRelatedInformation bool) []extendedError {
+func expandErrors(errs []typesutil.Error, supportsRelatedInformation bool) []extendedError {
 	var result []extendedError
 	for i := 0; i < len(errs); {
 		original := extendedError{
@@ -1980,7 +1980,7 @@ func expandErrors(errs []types.Error, supportsRelatedInformation bool) []extende
 
 			// Copy over the secondary errors, noting the location of the
 			// current error we're cloning.
-			clonedError := extendedError{primary: relocatedSecondary, secondaries: []types.Error{original.primary}}
+			clonedError := extendedError{primary: relocatedSecondary, secondaries: []typesutil.Error{original.primary}}
 			for j, secondary := range original.secondaries {
 				if i == j {
 					secondary.Msg += " (this error)"

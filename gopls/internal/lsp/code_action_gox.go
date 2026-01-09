@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/goplus/gop/ast"
+	"github.com/goplus/xgo/ast"
 	"golang.org/x/tools/gop/ast/inspector"
 	"golang.org/x/tools/gopls/internal/bug"
 	"golang.org/x/tools/gopls/internal/goxls"

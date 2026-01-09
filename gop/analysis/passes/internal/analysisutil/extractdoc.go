@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/goplus/gop/parser"
-	"github.com/goplus/gop/token"
+	"github.com/goplus/xgo/parser"
+	"github.com/goplus/xgo/token"
 )
 
 // MustExtractDoc is like [ExtractDoc] but it panics on error.

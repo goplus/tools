@@ -8,7 +8,7 @@ import (
 	"go/types"
 	"strings"
 
-	"github.com/goplus/gop/ast"
+	"github.com/goplus/xgo/ast"
 	"golang.org/x/tools/gopls/internal/lsp/source"
 )
 

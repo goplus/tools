@@ -264,7 +264,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    See the License for the specific language governing permissions and
    limitations under the License.
 
--- github.com/goplus/gop LICENSE --
+-- github.com/goplus/xgo LICENSE --
 
 Apache License
                            Version 2.0, January 2004

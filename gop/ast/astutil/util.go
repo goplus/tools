@@ -5,7 +5,7 @@
 package astutil
 
 import (
-	"github.com/goplus/gop/ast"
+	"github.com/goplus/xgo/ast"
 )
 
 // Unparen returns e with any enclosing parentheses stripped.

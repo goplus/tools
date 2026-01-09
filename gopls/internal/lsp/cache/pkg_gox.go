@@ -7,7 +7,7 @@ package cache
 import (
 	"fmt"
 
-	"github.com/goplus/gop/x/typesutil"
+	"github.com/goplus/xgo/x/typesutil"
 	"golang.org/x/tools/gopls/internal/lsp/source"
 	"golang.org/x/tools/gopls/internal/span"
 )
@@ -17,13 +17,13 @@ func (p *Package) GopTypesInfo() *typesutil.Info {
 }
 
 /*
-// CompiledNongenGoFiles returns all Go files excluding "gop_autogen*.go".
+// CompiledNongenGoFiles returns all Go files excluding "xgo_autogen*.go".
 func (p *Package) CompiledNongenGoFiles() []*source.ParsedGoFile {
 	gofs := p.pkg.compiledGoFiles
 	ret := make([]*source.ParsedGoFile, 0, len(gofs))
 	for _, f := range gofs {
 		fname := filepath.Base(f.URI.Filename())
-		if strings.HasPrefix(fname, "gop_autogen") {
+		if strings.HasPrefix(fname, "xgo_autogen") {
 			continue
 		}
 		ret = append(ret, f)
@@ -36,7 +36,7 @@ func (p *Package) GetNongenSyntax() []*goast.File {
 	ret := make([]*goast.File, 0, len(gofs))
 	for _, f := range gofs {
 		fname := filepath.Base(f.URI.Filename())
-		if strings.HasPrefix(fname, "gop_autogen") {
+		if strings.HasPrefix(fname, "xgo_autogen") {
 			continue
 		}
 		ret = append(ret, f.File)

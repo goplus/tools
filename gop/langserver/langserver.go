@@ -12,7 +12,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/goplus/gop/x/langserver"
+	"github.com/goplus/xgo/x/langserver"
 )
 
 const (

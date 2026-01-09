@@ -9,8 +9,8 @@ import (
 	"go/types"
 	"strings"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/x/typesutil"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/x/typesutil"
 )
 
 // gopPrintfArgKind returns the expected objKind when completing a

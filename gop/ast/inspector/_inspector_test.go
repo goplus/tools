@@ -14,8 +14,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/parser"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/parser"
 	"golang.org/x/tools/gop/ast/inspector"
 )
 

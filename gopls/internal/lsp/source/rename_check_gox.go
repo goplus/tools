@@ -7,8 +7,8 @@ package source
 import (
 	"go/types"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/x/typesutil"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/x/typesutil"
 )
 
 // gopForEachLexicalRef calls fn(id, block) for each identifier id in package

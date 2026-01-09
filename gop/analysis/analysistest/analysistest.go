@@ -19,9 +19,9 @@ import (
 	"testing"
 	"text/scanner"
 
-	"github.com/goplus/gop/ast"
-	"github.com/goplus/gop/format"
-	"github.com/goplus/gop/token"
+	"github.com/goplus/xgo/ast"
+	"github.com/goplus/xgo/format"
+	"github.com/goplus/xgo/token"
 	"golang.org/x/tools/gop/analysis"
 	"golang.org/x/tools/gop/analysis/internal/checker"
 	"golang.org/x/tools/gop/packages"

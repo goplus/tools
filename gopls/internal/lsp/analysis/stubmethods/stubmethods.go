@@ -5,10 +5,8 @@
 package stubmethods
 
 import (
-	"bytes"
 	"fmt"
 	"go/ast"
-	"go/format"
 	"go/token"
 	"go/types"
 	"strconv"
@@ -16,8 +14,6 @@ import (
 
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/ast/astutil"
-	"golang.org/x/tools/internal/analysisinternal"
-	"golang.org/x/tools/internal/typesinternal"
 )
 
 const Doc = `stub methods analyzer
@@ -46,16 +42,8 @@ func run(pass *analysis.Pass) (interface{}, error) {
 				break
 			}
 		}
-		// Get the end position of the error.
-		_, _, end, ok := typesinternal.ReadGo116ErrorData(err)
-		if !ok {
-			var buf bytes.Buffer
-			if err := format.Node(&buf, pass.Fset, file); err != nil {
-				continue
-			}
-			end = analysisinternal.TypeErrorEndPos(pass.Fset, buf.Bytes(), err.Pos)
-		}
-		if diag, ok := DiagnosticForError(pass.Fset, file, err.Pos, end, err.Msg, pass.TypesInfo); ok {
+		// Get the end position of the error.\
+		if diag, ok := DiagnosticForError(pass.Fset, file, err.Pos, err.End, err.Msg, pass.TypesInfo); ok {
 			pass.Report(diag)
 		}
 	}
