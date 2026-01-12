@@ -986,40 +986,13 @@ func (an *analysisNode) typeCheck(parsed []*source.ParsedGoFile, gopParsed []*so
 		}
 	}
 
-	add := func(err error) {
-		switch e := err.(type) {
-		case *types.Error:
-			for _, p := range parsed {
-				if p.ParseErr != nil && source.NodeContains(p.File, e.Pos) {
-					return
-				}
-			}
-		case *typesutil.Error:
-			for _, p := range parsed {
-				if p.ParseErr != nil && source.NodeContains(p.File, e.Pos) {
-					return
-				}
-				if p.ParseErr != nil && source.NodeContains(p.File, e.End) {
-					return
-				}
-			}
-			for _, p := range gopParsed {
-				if p.ParseErr != nil && source.NodeContains(p.File, e.Pos) {
-					return
-				}
-				if p.ParseErr != nil && source.NodeContains(p.File, e.End) {
-					return
-				}
-			}
-		}
-	}
-
 	cfg := &types.Config{
 		Sizes: m.TypesSizes,
 		Error: func(e error) {
 			pkg.compiles = false // type error
-
-			add(e)
+			if typError, ok := e.(typesutil.Error); ok {
+				pkg.typeErrors = append(pkg.typeErrors, typError)
+			}
 		},
 		Importer: importerFunc(func(importPath string) (*types.Package, error) {
 			// Beware that returning an error from this function
