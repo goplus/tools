@@ -8,9 +8,11 @@ import (
 	"bytes"
 	"fmt"
 	"go/types"
+	"strings"
 
 	"github.com/goplus/xgo/ast"
 	"github.com/goplus/xgo/format"
+	"github.com/goplus/xgo/x/typesutil"
 	"github.com/qiniu/x/log"
 	"golang.org/x/tools/gop/analysis"
 	"golang.org/x/tools/gop/ast/astutil"
@@ -41,7 +43,7 @@ func gopRun(pass *analysis.Pass) (interface{}, error) {
 outer:
 	for _, typeErr := range pass.TypeErrors {
 		// Filter out the errors that are not relevant to this analyzer.
-		if !FixesError(typeErr) {
+		if !FixesGopError(typeErr) {
 			continue
 		}
 		var file *ast.File
@@ -236,4 +238,14 @@ outer:
 		})
 	}
 	return nil, nil
+}
+
+func FixesGopError(err typesutil.Error) bool {
+	msg := strings.TrimSpace(err.Msg)
+	for _, rx := range wrongReturnNumRegexes {
+		if rx.MatchString(msg) {
+			return true
+		}
+	}
+	return false
 }

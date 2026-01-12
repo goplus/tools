@@ -986,26 +986,40 @@ func (an *analysisNode) typeCheck(parsed []*source.ParsedGoFile, gopParsed []*so
 		}
 	}
 
+	add := func(err error) {
+		switch e := err.(type) {
+		case *types.Error:
+			for _, p := range parsed {
+				if p.ParseErr != nil && source.NodeContains(p.File, e.Pos) {
+					return
+				}
+			}
+		case *typesutil.Error:
+			for _, p := range parsed {
+				if p.ParseErr != nil && source.NodeContains(p.File, e.Pos) {
+					return
+				}
+				if p.ParseErr != nil && source.NodeContains(p.File, e.End) {
+					return
+				}
+			}
+			for _, p := range gopParsed {
+				if p.ParseErr != nil && source.NodeContains(p.File, e.Pos) {
+					return
+				}
+				if p.ParseErr != nil && source.NodeContains(p.File, e.End) {
+					return
+				}
+			}
+		}
+	}
+
 	cfg := &types.Config{
 		Sizes: m.TypesSizes,
 		Error: func(e error) {
 			pkg.compiles = false // type error
 
-			// Suppress type errors in files with parse errors
-			// as parser recovery can be quite lossy (#59888).
-			typeError := e.(typesutil.Error)
-			for _, p := range parsed {
-				if p.ParseErr != nil && source.NodeContains(p.File, typeError.Pos) {
-					return
-				}
-			}
-			// goxls: Go+
-			for _, p := range gopParsed {
-				if p.ParseErr != nil && source.NodeContains(p.File, typeError.Pos) {
-					return
-				}
-			}
-			pkg.typeErrors = append(pkg.typeErrors, typeError)
+			add(e)
 		},
 		Importer: importerFunc(func(importPath string) (*types.Package, error) {
 			// Beware that returning an error from this function
@@ -1365,7 +1379,6 @@ func (act *action) exec() (interface{}, *actionSummary, error) {
 			Pkg:        pkg.types,
 			TypesInfo:  pkg.typesInfo,
 			TypesSizes: pkg.typesSizes,
-			TypeErrors: pkg.typeErrors,
 			ResultOf:   inputs,
 			Report: func(d analysis.Diagnostic) {
 				diagnostic, err := toGobDiagnostic(posToLocation, analyzer, d)
@@ -1382,6 +1395,7 @@ func (act *action) exec() (interface{}, *actionSummary, error) {
 			AllObjectFacts:    func() []analysis.ObjectFact { return factset.AllObjectFacts(factFilter) },
 			AllPackageFacts:   func() []analysis.PackageFact { return factset.AllPackageFacts(factFilter) },
 		},
+		TypeErrors:   pkg.typeErrors,
 		ResultOf:     gopInputs,
 		GopFiles:     pkg.gopFiles,
 		GopTypesInfo: pkg.gopTypesInfo,

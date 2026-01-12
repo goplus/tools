@@ -11,9 +11,9 @@ import (
 	"go/ast"
 	"go/format"
 	"go/token"
+	"go/types"
 	"strings"
 
-	"github.com/goplus/xgo/x/typesutil"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/ast/astutil"
 )
@@ -50,7 +50,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	return nil, nil
 }
 
-func runForError(pass *analysis.Pass, err typesutil.Error, name string) error {
+func runForError(pass *analysis.Pass, err types.Error, name string) error {
 	var file *ast.File
 	for _, f := range pass.Files {
 		if f.Pos() <= err.Pos && err.Pos < f.End() {
