@@ -1,6 +1,6 @@
 module golang.org/x/tools
 
-go 1.18 // tagx:compat 1.16
+go 1.19 // tagx:compat 1.16
 
 require (
 	github.com/goplus/mod v0.18.0
