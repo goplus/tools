@@ -22,7 +22,7 @@ jobs:
       uses: goplus/setup-goplus@v1.1.0
       with:
         go-version: ${{ matrix.go-version }}
-        gop-version: "1.1.13"
+        gop-version: "1.6.0-pre.1"
         check-latest: true
         cache: true
 
