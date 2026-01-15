@@ -28,7 +28,7 @@ jobs:
     - name: Set up XGo
       uses: goplus/setup-xgo@v1
       with:
-        xgo-version: 1.6.0-pre.1
+        xgo-version: 1.5.x
 
     - name: Build Go+ tools
       run: |
