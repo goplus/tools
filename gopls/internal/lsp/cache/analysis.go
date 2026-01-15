@@ -1050,15 +1050,10 @@ func (an *analysisNode) typeCheck(parsed []*source.ParsedGoFile, gopParsed []*so
 
 	// Type checking errors are handled via the config, so ignore them here.
 	// goxls: use Go+
-	if len(pkg.gopFiles) > 0 {
-		cfg.Importer = newGopImporter(cfg.Importer, m.GopImporter(pkg.fset))
-		opts := &typesutil.Config{Types: pkg.types, Fset: pkg.fset, Mod: m.GopMod_()}
-		check := typesutil.NewChecker(cfg, opts, pkg.typesInfo, pkg.gopTypesInfo)
-		_ = check.Files(pkg.files, pkg.gopFiles)
-	} else {
-		check := types.NewChecker(cfg, pkg.fset, pkg.types, pkg.typesInfo)
-		_ = check.Files(pkg.files)
-	}
+	cfg.Importer = newGopImporter(cfg.Importer, m.GopImporter(pkg.fset))
+	opts := &typesutil.Config{Types: pkg.types, Fset: pkg.fset, Mod: m.GopMod_()}
+	check := typesutil.NewChecker(cfg, opts, pkg.typesInfo, pkg.gopTypesInfo)
+	_ = check.Files(pkg.files, pkg.gopFiles)
 
 	// debugging (type errors are quite normal)
 	if false {
