@@ -207,9 +207,8 @@ type Pass struct {
 	ResultOf map[*Analyzer]any
 
 	// goxls: Go+
-	TypeErrors   []typesutil.Error // TypeErrors is the list of type errors in the package.
-	GopFiles     []*ast.File       // the abstract syntax tree of each file
-	GopTypesInfo *typesutil.Info   // type information about the syntax trees
+	GopFiles     []*ast.File     // the abstract syntax tree of each file
+	GopTypesInfo *typesutil.Info // type information about the syntax trees
 }
 
 // PackageFact is a package together with an associated fact.
