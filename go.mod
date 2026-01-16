@@ -4,7 +4,7 @@ go 1.19 // tagx:compat 1.16
 
 require (
 	github.com/goplus/mod v0.18.0
-	github.com/goplus/xgo v1.6.0-pre.1
+	github.com/goplus/xgo v1.6.0-pre.2.0.20260116064830-ef2ef138a9a3
 	github.com/yuin/goldmark v1.7.8
 	golang.org/x/mod v0.20.0
 	golang.org/x/net v0.29.0
