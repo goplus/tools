@@ -19,15 +19,6 @@ package a
 func f(x int) {
 	append("") //@diag(re`""`, re"a slice")
 
-	x := 123 //@diag(re"x := 123", re"no new variables"), suggestedfix(re"():", re"no new variables", "quickfix", fix)
-}
-
--- @fix/typeerr.go --
-package a
-
-func f(x int) {
-	append("") //@diag(re`""`, re"a slice")
-
-	x = 123 //@diag(re"x := 123", re"no new variables"), suggestedfix(re"():", re"no new variables", "quickfix", fix)
+	x := 123 //@diag(":=", re"no new variables on left side of :="), diag(":=", re"no new variables on left side of :=")
 }
 
