@@ -1645,7 +1645,7 @@ import (
 		Run(t, mod, func(t *testing.T, env *Env) {
 			env.OnceMet(
 				InitialWorkspaceLoad,
-				Diagnostics(env.AtRegexp("main.go", `"nosuchpkg"`), WithMessage(`could not import nosuchpkg (no required module provides package "nosuchpkg"`)),
+				Diagnostics(env.AtRegexp("main.go", `"nosuchpkg"`), WithMessage(`could not import nosuchpkg`)),
 			)
 		})
 	})
@@ -1657,7 +1657,7 @@ import (
 		).Run(t, mod, func(t *testing.T, env *Env) {
 			env.OnceMet(
 				InitialWorkspaceLoad,
-				Diagnostics(env.AtRegexp("main.go", `"nosuchpkg"`), WithMessage(`cannot find package "nosuchpkg"`)),
+				Diagnostics(env.AtRegexp("main.go", `"nosuchpkg"`), WithMessage(`could not import nosuchpkg`)),
 			)
 		})
 	})
