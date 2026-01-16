@@ -1,9 +1,9 @@
 This test checks a diagnostic for invalid use of internal packages.
 
-This list error changed in Go 1.21.
+This list error changed in Go 1.22.
 
 -- flags --
--min_go=go1.21
+-min_go=go1.22
 
 -- go.mod --
 module bad.test
