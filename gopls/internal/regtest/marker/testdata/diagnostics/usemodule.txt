@@ -39,7 +39,7 @@ go 1.18
 -- b/main.go --
 package main //@diag("main", re"add this module to your go.work")
 
-import "mod.com/b/lib" //@diag("\"mod.com", re"not included in a workspace module")
+import "mod.com/b/lib" //@diag(re"\"mod.com/b/lib\"", re"could not import mod.com/b/lib")
 
 func main() {
 	_ = lib.C

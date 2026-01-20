@@ -12,19 +12,23 @@ jobs:
   Test:
     strategy:
       matrix:
-        go-version: [1.18.x, 1.21.x]
+        go-version: [1.19.x, 1.21.x]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up Go/Go+
-      uses: goplus/setup-goplus@v1.1.0
+    - name: Setup Go
+      uses: actions/setup-go@v6
       with:
         go-version: ${{ matrix.go-version }}
-        gop-version: "1.1.13"
-        check-latest: true
         cache: true
+        cache-dependency-path: go.sum
+
+    - name: Set up XGo
+      uses: goplus/setup-xgo@v1
+      with:
+        xgo-version: 1.5.x
 
     - name: Build Go+ tools
       run: |

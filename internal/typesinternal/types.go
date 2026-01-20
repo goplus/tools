@@ -51,6 +51,32 @@ func ReadGo116ErrorData(err types.Error) (code ErrorCode, start, end token.Pos, 
 	return ErrorCode(data[0]), token.Pos(data[1]), token.Pos(data[2]), true
 }
 
+// WriteGo116ErrorData sets additional information on types.Error values
+// for Go version 1.16 and later: the error code, start position, and end position.
+//
+// Returns false if the data could not be written (e.g., fields don't exist).
+func WriteGo116ErrorData(err *types.Error, code ErrorCode, start, end token.Pos) bool {
+	v := reflect.ValueOf(err).Elem()
+	for i, name := range []string{"go116code", "go116start", "go116end"} {
+		f := v.FieldByName(name)
+		if !f.IsValid() {
+			return false
+		}
+		var value int
+		switch i {
+		case 0:
+			value = int(code)
+		case 1:
+			value = int(start)
+		case 2:
+			value = int(end)
+		}
+		addr := unsafe.Pointer(f.UnsafeAddr())
+		*(*int)(addr) = value
+	}
+	return true
+}
+
 var SetGoVersion = func(conf *types.Config, version string) bool { return false }
 
 // SkipEncoderMethodSorting marks the encoder as not requiring sorted methods,
