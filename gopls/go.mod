@@ -1,15 +1,15 @@
 module golang.org/x/tools/gopls
 
-go 1.18
+go 1.19
 
 require (
 	github.com/google/go-cmp v0.6.0
-	github.com/goplus/gogen v1.19.6
-	github.com/goplus/mod v0.18.0
-	github.com/goplus/xgo v1.5.3
+	github.com/goplus/gogen v1.20.2
+	github.com/goplus/mod v0.19.0
+	github.com/goplus/xgo v1.6.0
 	github.com/jba/printsrc v0.2.2
 	github.com/jba/templatecheck v0.7.0
-	github.com/qiniu/x v1.15.3
+	github.com/qiniu/x v1.16.0
 	github.com/sergi/go-diff v1.1.0
 	golang.org/x/mod v0.20.0
 	golang.org/x/sync v0.8.0

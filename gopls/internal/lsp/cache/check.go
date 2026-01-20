@@ -1679,20 +1679,15 @@ func doTypeCheck(ctx context.Context, b *typeCheckBatch, ph *packageHandle) (*sy
 	}
 
 	// Type checking errors are handled via the config, so ignore them here.
-	// goxls: use Go+
-	if len(pkg.compiledGopFiles) > 0 {
-		var gopFiles []*gopast.File
-		for _, cgf := range pkg.compiledGopFiles {
-			gopFiles = append(gopFiles, cgf.File)
-		}
-		cfg.Importer = newGopImporter(cfg.Importer, ph.m.GopImporter(pkg.fset))
-		opts := &typesutil.Config{Types: pkg.types, Fset: pkg.fset, Mod: ph.m.GopMod_()}
-		check := typesutil.NewChecker(cfg, opts, pkg.typesInfo, pkg.gopTypesInfo)
-		_ = check.Files(files, gopFiles)
-	} else {
-		check := types.NewChecker(cfg, pkg.fset, pkg.types, pkg.typesInfo)
-		_ = check.Files(files) // 50us-15ms, depending on size of package
+	// if gopFiles is empty, check.Files can be used directly to types.Check.Files
+	var gopFiles []*gopast.File
+	for _, cgf := range pkg.compiledGopFiles {
+		gopFiles = append(gopFiles, cgf.File)
 	}
+	cfg.Importer = newGopImporter(cfg.Importer, ph.m.GopImporter(pkg.fset))
+	opts := &typesutil.Config{Types: pkg.types, Fset: pkg.fset, Mod: ph.m.GopMod_()}
+	check := typesutil.NewChecker(cfg, opts, pkg.typesInfo, pkg.gopTypesInfo)
+	_ = check.Files(files, gopFiles)
 
 	// If the context was cancelled, we may have returned a ton of transient
 	// errors to the type checker. Swallow them.

@@ -362,7 +362,7 @@ func hasGoTestFile(goFiles []string) bool {
 }
 
 func isAutogen(fname string) bool {
-	return strings.HasPrefix(fname, "xgo_autogen")
+	return strings.HasPrefix(fname, "xgo_autogen") || strings.HasPrefix(fname, "gop_autogen")
 }
 
 func isGoTestFile(fname string) bool {

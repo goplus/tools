@@ -990,7 +990,6 @@ func (an *analysisNode) typeCheck(parsed []*source.ParsedGoFile, gopParsed []*so
 		Sizes: m.TypesSizes,
 		Error: func(e error) {
 			pkg.compiles = false // type error
-
 			// Suppress type errors in files with parse errors
 			// as parser recovery can be quite lossy (#59888).
 			typeError := e.(typesutil.Error)
@@ -1063,15 +1062,10 @@ func (an *analysisNode) typeCheck(parsed []*source.ParsedGoFile, gopParsed []*so
 
 	// Type checking errors are handled via the config, so ignore them here.
 	// goxls: use Go+
-	if len(pkg.gopFiles) > 0 {
-		cfg.Importer = newGopImporter(cfg.Importer, m.GopImporter(pkg.fset))
-		opts := &typesutil.Config{Types: pkg.types, Fset: pkg.fset, Mod: m.GopMod_()}
-		check := typesutil.NewChecker(cfg, opts, pkg.typesInfo, pkg.gopTypesInfo)
-		_ = check.Files(pkg.files, pkg.gopFiles)
-	} else {
-		check := types.NewChecker(cfg, pkg.fset, pkg.types, pkg.typesInfo)
-		_ = check.Files(pkg.files)
-	}
+	cfg.Importer = newGopImporter(cfg.Importer, m.GopImporter(pkg.fset))
+	opts := &typesutil.Config{Types: pkg.types, Fset: pkg.fset, Mod: m.GopMod_()}
+	check := typesutil.NewChecker(cfg, opts, pkg.typesInfo, pkg.gopTypesInfo)
+	_ = check.Files(pkg.files, pkg.gopFiles)
 
 	// debugging (type errors are quite normal)
 	if false {
@@ -1365,7 +1359,7 @@ func (act *action) exec() (interface{}, *actionSummary, error) {
 			Pkg:        pkg.types,
 			TypesInfo:  pkg.typesInfo,
 			TypesSizes: pkg.typesSizes,
-			TypeErrors: pkg.typeErrors,
+			TypeErrors: typesErrorsToStd(pkg.typeErrors),
 			ResultOf:   inputs,
 			Report: func(d analysis.Diagnostic) {
 				diagnostic, err := toGobDiagnostic(posToLocation, analyzer, d)
@@ -1612,6 +1606,22 @@ func toGobDiagnostic(posToLocation func(start, end token.Pos) (protocol.Location
 		Related:        related,
 		// Analysis diagnostics do not contain tags.
 	}, nil
+}
+
+func typesErrorsToStd(errs []typesutil.Error) []types.Error {
+	var result []types.Error
+	for _, e := range errs {
+		te := types.Error{
+			Fset: e.Fset,
+			Pos:  e.Pos,
+			Msg:  e.Msg,
+			Soft: e.Soft,
+		}
+
+		typesinternal.WriteGo116ErrorData(&te, typesinternal.ErrorCode(e.Code), e.Pos, e.End)
+		result = append(result, te)
+	}
+	return result
 }
 
 // effectiveURL computes the effective URL of diag,

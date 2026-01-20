@@ -16,7 +16,6 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/goplus/xgo/x/typesutil"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/ast/astutil"
 	"golang.org/x/tools/gopls/internal/lsp/safetoken"
@@ -59,7 +58,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	return nil, nil
 }
 
-func runForError(pass *analysis.Pass, err typesutil.Error) {
+func runForError(pass *analysis.Pass, err types.Error) {
 	var name string
 	for _, prefix := range undeclaredNamePrefixes {
 		if !strings.HasPrefix(err.Msg, prefix) {
