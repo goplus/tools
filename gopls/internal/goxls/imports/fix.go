@@ -164,7 +164,9 @@ func collectReferences(f *ast.File) references {
 			if !ok {
 				break
 			}
-			if xident.Obj != nil {
+			// In Go+, especially in yap files, the parser may assign a "bad" object
+			// to package identifiers. We need to treat these as valid package refs.
+			if xident.Obj != nil && xident.Obj.Kind != ast.Bad {
 				// If the parser can resolve it, it's not a package ref.
 				break
 			}
@@ -393,10 +395,11 @@ func (p *pass) fix() ([]*ImportFix, bool) {
 		// main packages in the same directory, and we don't want to
 		// remove imports if they happen to have the same name as a var in
 		// a different package.
-		if _, ok := p.allRefs[p.importIdentifier(imp)]; !ok {
+		ident := p.importIdentifier(imp)
+		if _, ok := p.allRefs[ident]; !ok {
 			fixes = append(fixes, &ImportFix{
 				StmtInfo:  *imp,
-				IdentName: p.importIdentifier(imp),
+				IdentName: ident,
 				FixType:   DeleteImport,
 			})
 			continue
