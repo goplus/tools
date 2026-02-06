@@ -1,4 +1,5 @@
 //go:build !go1.25
+// +build !go1.25
 
 // Copyright 2023 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
@@ -20,7 +21,7 @@ import (
 func AddExistingFiles(fset *token.FileSet, files []*token.File) {
 	// Punch through the FileSet encapsulation.
 	type tokenFileSet struct {
-		// This type remained essentially consistent from go1.16 to go1.21.
+		// This type remained essentially consistent from go1.16 to go1.24.
 		mutex sync.RWMutex
 		base  int
 		files []*token.File
