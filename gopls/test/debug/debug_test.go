@@ -48,6 +48,7 @@ var templates = map[string]struct {
 func TestTemplates(t *testing.T) {
 	testenv.NeedsGoPackages(t)
 	testenv.NeedsLocalXTools(t)
+	testenv.SkipAfterGo1Point(t, 23) // go/packages has issues loading runtime/debug in Go 1.24+
 
 	cfg := &packages.Config{
 		Mode: packages.NeedTypes | packages.NeedSyntax | packages.NeedTypesInfo,
