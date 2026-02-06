@@ -48,7 +48,7 @@ func hello() {
 }
 
 func hi() {
-	runtime.GOROOT() //@diag("runtime", re"runtime.GOROOT is deprecated")
+	runtime.GOROOT()
 	fmt.Printf("")
 
 	log.Printf("")
@@ -68,7 +68,7 @@ func hello() {
 }
 
 func hi() {
-	runtime.GOROOT() //@diag("runtime", re"runtime.GOROOT is deprecated")
+	runtime.GOROOT()
 	fmt.Printf("")
 
 	log.Printf("")
