@@ -32,10 +32,24 @@ var Analyzer = &analysis.Analyzer{
 }
 
 // The suffix for this error message changed in Go 1.20.
+// In Go 1.23, the format changed again to a prefix format.
 var unusedVariableSuffixes = []string{" declared and not used", " declared but not used"}
+
+const unusedVariablePrefix = "declared and not used: "
 
 func run(pass *analysis.Pass) (interface{}, error) {
 	for _, typeErr := range pass.TypeErrors {
+		// Try Go 1.23+ prefix format first
+		if strings.HasPrefix(typeErr.Msg, unusedVariablePrefix) {
+			varName := strings.TrimPrefix(typeErr.Msg, unusedVariablePrefix)
+			err := runForError(pass, typeErr, varName)
+			if err != nil {
+				return nil, err
+			}
+			continue
+		}
+
+		// Try Go 1.20-1.22 suffix format
 		for _, suffix := range unusedVariableSuffixes {
 			if strings.HasSuffix(typeErr.Msg, suffix) {
 				varName := strings.TrimSuffix(typeErr.Msg, suffix)
