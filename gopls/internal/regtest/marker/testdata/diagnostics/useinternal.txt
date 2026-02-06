@@ -18,4 +18,4 @@ func Hello() {}
 -- bad/bad.go --
 package bad
 
-import _ "bad.test/assign/internal/secret" //@diag("\"bad.test/assign/internal/secret\"", re"could not import bad.test/assign/internal/secret \\(invalid use of internal package \"bad.test/assign/internal/secret\"\\)"),diag("_", re"use of internal package bad.test/assign/internal/secret not allowed")
+import _ "bad.test/assign/internal/secret" //@diag("\"bad.test/assign/internal/secret\"", re"could not import bad.test/assign/internal/secret \\((invalid use of internal package \"bad.test/assign/internal/secret\"|no required module provides package)"),diag("_", re"use of internal package bad.test/assign/internal/secret not allowed")

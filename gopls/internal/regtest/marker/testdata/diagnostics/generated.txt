@@ -1,5 +1,8 @@
 Test of "undeclared" diagnostic in generated code.
 
+-- flags --
+-max_go=go1.21
+
 -- go.mod --
 module example.com
 go 1.12

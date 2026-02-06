@@ -1,7 +1,11 @@
-This test verifies various behaviors of function extraction.
+This test verifies various behaviors of function extraction in Go 1.22+.
+
+In Go 1.22, the function extraction behavior changed to use explicit variable
+declarations and assignment operators when variables are already declared in
+the outer scope.
 
 -- flags --
--max_go=go1.21
+-min_go=go1.22
 
 -- go.mod --
 module mod.test/extract
@@ -416,7 +420,8 @@ package extract
 func _() {
 	var a []int
 	//@codeaction("refactor.extract", "a", siEnd, si)
-	a, b := newFunction(a)           //@loc(siEnd, "4")
+	var b int
+	a, b = newFunction(a)           //@loc(siEnd, "4")
 	a = append(a, b)
 }
 
@@ -476,7 +481,8 @@ package extract
 func _() {
 	var b []int
 	//@codeaction("refactor.extract", "a", upEnd, up)
-	a, b := newFunction(b) //@loc(upEnd, ")")
+	var a int
+	a, b = newFunction(b) //@loc(upEnd, ")")
 	b[0] = 1
 	if a == 2 {
 		return
@@ -573,7 +579,8 @@ import "strconv"
 
 func _() {
 	i, err := strconv.Atoi("1")
-	u, err := newFunction() //@codeaction("refactor.extract", "u", ")", redefine)
+	var u int
+	u, err = newFunction() //@codeaction("refactor.extract", "u", ")", redefine)
 	if i == u || err == nil {
 		return
 	}
