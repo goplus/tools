@@ -1,10 +1,9 @@
-This test checks basic behavior of textDocument/formatting requests (Go 1.22+).
+This test checks basic behavior of textDocument/formatting requests (Go 1.24+).
 
-In Go 1.22, error message formats changed.
+In Go 1.24, runtime.GOROOT became deprecated.
 
 -- flags --
--min_go=go1.22
--max_go=go1.23
+-min_go=go1.24
 
 -- go.mod --
 module mod.com
@@ -49,7 +48,7 @@ func hello() {
 }
 
 func hi() {
-	runtime.GOROOT()
+	runtime.GOROOT() //@diag("runtime", re"runtime.GOROOT is deprecated")
 	fmt.Printf("")
 
 	log.Printf("")
@@ -69,7 +68,7 @@ func hello() {
 }
 
 func hi() {
-	runtime.GOROOT()
+	runtime.GOROOT() //@diag("runtime", re"runtime.GOROOT is deprecated")
 	fmt.Printf("")
 
 	log.Printf("")

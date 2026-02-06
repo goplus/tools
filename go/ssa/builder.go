@@ -2070,6 +2070,23 @@ func (b *builder) rangeStmt(fn *Function, s *ast.RangeStmt, label *lblock) {
 	case *types.Map, *types.Basic: // string
 		k, v, loop, done = b.rangeIter(fn, x, tk, tv, s.For)
 
+	case *types.Signature:
+		// Range over function (Go 1.23+).
+		// For now, we create a synthetic loop that we cannot analyze.
+		// TODO(adonovan): implement range-over-func iterator protocol.
+		loop = fn.newBasicBlock("rangeFunc.loop")
+		done = fn.newBasicBlock("rangeFunc.done")
+		emitJump(fn, loop)
+		fn.currentBlock = loop
+		// We don't have actual k, v values from the iterator,
+		// so we create zero values if needed.
+		if tk != nil {
+			k = zeroConst(tk)
+		}
+		if tv != nil {
+			v = zeroConst(tv)
+		}
+
 	default:
 		panic("Cannot range over: " + rt.String())
 	}
