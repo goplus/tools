@@ -68,7 +68,8 @@ func TestBuildPackageGraph(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping with -short: loading the packages can take a long time with a cold cache")
 	}
-	testenv.NeedsGoBuild(t) // for go/packages
+	testenv.NeedsGoBuild(t)          // for go/packages
+	testenv.SkipAfterGo1Point(t, 23) // gcexportdata doesn't support Go 1.24+ export format yet
 
 	t0 := time.Now()
 	exports, meta, err := load(*query, *verify)

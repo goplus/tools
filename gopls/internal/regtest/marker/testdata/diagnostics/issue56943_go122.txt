@@ -1,11 +1,11 @@
 This test verifies that we produce diagnostics related to mismatching
-unexported interface methods in non-workspace packages.
+unexported interface methods in non-workspace packages (Go 1.22+).
 
 Previously, we would fail to produce a diagnostic because we trimmed the AST.
 See golang/go#56943.
 
 -- flags --
--max_go=go1.21
+-min_go=go1.22
 
 -- main.go --
 package main
@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	var a int               //@diag(re"(a) int", re"a declared.*not used")
+	var a int               //@diag(re"(a) int", re"(declared and not used: a|a declared and not used)")
 	var _ ast.Expr = node{} //@diag("node{}", re"missing.*exprNode")
 }
 

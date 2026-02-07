@@ -12,6 +12,7 @@ import (
 
 	"golang.org/x/tools/gopls/internal/lsp/protocol"
 	. "golang.org/x/tools/gopls/internal/lsp/regtest"
+	"golang.org/x/tools/internal/testenv"
 )
 
 // test generic receivers
@@ -105,6 +106,12 @@ func FuzzHex(f *testing.F) {
 		{"b_test.go", "f.F", 3, []string{"Fuzz(func(t *testing.T, a []byte)", "Fail", "FailNow",
 			"Failed", "Fatal", "Fatalf"}},
 	}
+
+	// Go 1.25 added Attr method to testing.F
+	if testenv.Go1Point() >= 25 {
+		tests[0].want = []string{"Add", "Attr"}
+	}
+
 	Run(t, data, func(t *testing.T, env *Env) {
 		for _, test := range tests {
 			env.OpenFile(test.file)

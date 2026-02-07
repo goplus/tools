@@ -1,12 +1,15 @@
 This test verifies that gopls does not panic when encountering the go/types
 bug described in golang/go#59944: the Bindingf function is not included in
-the methodset of its receiver type.
+the methodset of its receiver type (Go 1.22+).
 
 Adapted from the code in question from the issue.
 
+In Go 1.22, a new diagnostic was added for defining methods on non-local types.
+In Go 1.24, the diagnostic message changed.
+
 -- flags --
 -cgo
--max_go=go1.21
+-min_go=go1.24
 
 -- go.mod --
 module example.com
@@ -29,6 +32,6 @@ type Layout = C.struct_layout
 
 // Bindingf is a printf wrapper. This was necessary to trigger the panic in
 // objectpath while encoding facts.
-func (l *Layout) Bindingf(format string, args ...interface{}) {
+func (l *Layout) Bindingf(format string, args ...interface{}) { //@diag("Layout", re"cannot define new methods")
 	fmt.Printf(format, args...)
 }

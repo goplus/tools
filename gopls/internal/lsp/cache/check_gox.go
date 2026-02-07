@@ -6,6 +6,7 @@ package cache
 
 import (
 	"go/types"
+	"sync"
 
 	"github.com/goplus/xgo/ast"
 	"github.com/goplus/xgo/x/typesutil"
@@ -25,11 +26,15 @@ func newGopTypeInfo() *typesutil.Info {
 }
 
 type gopImporter struct {
+	mu  sync.Mutex
 	imp types.Importer
 	gop types.Importer
 }
 
 func (p *gopImporter) Import(path string) (*types.Package, error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
 	if pkg, err := p.imp.Import(path); err == nil {
 		return pkg, nil
 	}
@@ -37,5 +42,5 @@ func (p *gopImporter) Import(path string) (*types.Package, error) {
 }
 
 func newGopImporter(imp, gop types.Importer) types.Importer {
-	return &gopImporter{imp, gop}
+	return &gopImporter{imp: imp, gop: gop}
 }
