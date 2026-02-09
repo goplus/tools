@@ -4,9 +4,9 @@ go 1.19
 
 require (
 	github.com/google/go-cmp v0.6.0
-	github.com/goplus/gogen v1.20.2
+	github.com/goplus/gogen v1.20.8
 	github.com/goplus/mod v0.19.0
-	github.com/goplus/xgo v1.6.0
+	github.com/goplus/xgo v1.6.2
 	github.com/jba/printsrc v0.2.2
 	github.com/jba/templatecheck v0.7.0
 	github.com/qiniu/x v1.16.0
