@@ -1,6 +1,6 @@
 module golang.org/x/tools
 
-go 1.19 // tagx:compat 1.16
+go 1.24.0 // tagx:compat 1.16
 
 require (
 	github.com/goplus/mod v0.19.0
@@ -9,7 +9,7 @@ require (
 	golang.org/x/mod v0.20.0
 	golang.org/x/net v0.29.0
 	golang.org/x/sync v0.8.0
-	golang.org/x/sys v0.29.0
+	golang.org/x/sys v0.41.0
 )
 
 require (
