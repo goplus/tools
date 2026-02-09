@@ -14,7 +14,7 @@ const (
 
 func FileKind(fext string) Kind {
 	switch fext {
-	case ".gop":
+	case ".gop", ".xgo":
 		return FileGopNormal
 	case ".spx", ".rdx", ".yap", ".gox", ".gmx":
 		return FileGopClass
@@ -23,5 +23,5 @@ func FileKind(fext string) Kind {
 }
 
 func Exts() string {
-	return "gop,spx,rdx,yap,gox,gmx"
+	return "gop,xgo,spx,rdx,yap,gox,gmx"
 }
