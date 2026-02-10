@@ -1,6 +1,6 @@
 module golang.org/x/tools/gopls
 
-go 1.19
+go 1.24.0
 
 require (
 	github.com/google/go-cmp v0.6.0
@@ -13,7 +13,7 @@ require (
 	github.com/sergi/go-diff v1.1.0
 	golang.org/x/mod v0.20.0
 	golang.org/x/sync v0.8.0
-	golang.org/x/sys v0.29.0
+	golang.org/x/sys v0.41.0
 	golang.org/x/text v0.18.0
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d
 	golang.org/x/vuln v0.0.0-20230110180137-6ad3e3d07815
