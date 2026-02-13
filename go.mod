@@ -1,11 +1,11 @@
 module golang.org/x/tools
 
-go 1.19 // tagx:compat 1.16
+go 1.22 // tagx:compat 1.16
 
 require (
 	github.com/goplus/mod v0.19.0
 	github.com/goplus/xgo v1.6.0
-	github.com/yuin/goldmark v1.7.8
+	github.com/yuin/goldmark v1.7.16
 	golang.org/x/mod v0.20.0
 	golang.org/x/net v0.29.0
 	golang.org/x/sync v0.8.0
