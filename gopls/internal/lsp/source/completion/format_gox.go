@@ -142,7 +142,7 @@ Suffixes:
 				if _, objs := gogen.CheckSigFuncExObjects(sig); len(objs) > 0 {
 					isOverload = true
 					var buf bytes.Buffer
-					buf.WriteString("Go+ overload funcs\n")
+					buf.WriteString("Go+ overload func\n")
 					for _, o := range objs {
 						if isIndexOverload(o.Name(), obj.Name()) {
 							c.seen[o] = true
@@ -288,6 +288,17 @@ func isIndexOverload(fn string, name string) bool {
 	n := len(name)
 	if (len(fn) == n+3) && (fn[:n] == name) && (fn[n] == '_') && (fn[n+1] == '_') {
 		c := fn[n+2]
+		if (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') {
+			return true
+		}
+	}
+	return false
+}
+
+func maybleIndexOverload(fn string) bool {
+	n := len(fn)
+	if (n > 3) && (fn[n-3] == '_') && (fn[n-2] == '_') {
+		c := fn[n-1]
 		if (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') {
 			return true
 		}

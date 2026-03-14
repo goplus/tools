@@ -5,4 +5,6 @@ package main
 import (
 	"golang.org/lsptests/overload/a"
 	"golang.org/lsptests/overload/b"
+	"golang.org/lsptests/overload/c"
+	"golang.org/lsptests/overload/d"
 )

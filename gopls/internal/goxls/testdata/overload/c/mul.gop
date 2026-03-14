@@ -1,0 +1,14 @@
+package c
+
+func MulInt(a, b int) int { //@mark(c_mulInt,"MulInt")
+	return a * b
+}
+
+func MulFloat(a, b float64) float64 { //@mark(c_mulFloat,"MulFloat")
+	return a * b
+}
+
+func Mul = (
+	MulInt
+	MulFloat
+)
