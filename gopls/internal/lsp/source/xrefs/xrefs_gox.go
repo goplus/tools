@@ -48,26 +48,38 @@ func gopIndex(
 						obj = typeparams.OriginMethod(fn)
 					}
 
-					objects := getObjects(obj.Pkg())
-					gobObj, ok := objects[obj]
-					if !ok {
-						path, err := objectpathFor(obj)
-						if err != nil {
-							// Capitalized but not exported
-							// (e.g. local const/var/type).
-							return true
+					reportRef := func(obj types.Object) error {
+						objects := getObjects(obj.Pkg())
+						gobObj, ok := objects[obj]
+						if !ok {
+							path, err := objectpathFor(obj)
+							if err != nil {
+								// Capitalized but not exported
+								// (e.g. local const/var/type).
+								return err
+							}
+							gobObj = &gobObject{Path: path}
+							objects[obj] = gobObj
 						}
-						gobObj = &gobObject{Path: path}
-						objects[obj] = gobObj
+
+						gobObj.GopRefs = append(gobObj.GopRefs, gobRef{
+							FileIndex: fileIndex,
+							Range:     nodeRange(n),
+						})
+						return nil
 					}
 
-					gobObj.GopRefs = append(gobObj.GopRefs, gobRef{
-						FileIndex: fileIndex,
-						Range:     nodeRange(n),
-					})
+					// goxls:overload use,refer its overload decl & overload members
+					if err := reportRef(obj); err != nil {
+						return true
+					}
+					if odObj, _ := info.OverloadOf(n); odObj != nil {
+						if err := reportRef(odObj); err != nil {
+							return true
+						}
+					}
 				}
 				//}
-
 			case *ast.ImportSpec:
 				// Report a reference from each import path
 				// string to the imported package.
