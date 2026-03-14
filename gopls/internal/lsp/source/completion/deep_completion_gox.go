@@ -85,6 +85,11 @@ func (c *gopCompleter) deepSearch(ctx context.Context, start time.Time, deadline
 				}
 			}
 
+			// skip index overload func
+			if fn, ok := obj.(*types.Func); ok && c.skipFunc[funcId(fn)] {
+				continue
+			}
+
 			c.addCandidate(ctx, &cand)
 
 			c.deepState.candidateCount++
