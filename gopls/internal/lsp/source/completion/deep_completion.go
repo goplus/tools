@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/goplus/gogen"
 	"github.com/qiniu/x/log"
 	"golang.org/x/tools/gopls/internal/goxls"
 )
@@ -138,7 +139,11 @@ func (c *completer) deepSearch(ctx context.Context, start time.Time, deadline *t
 			if obj == nil {
 				continue
 			}
-
+			if sig, ok := obj.Type().(*types.Signature); ok { //goxls:skip gop overload
+				if _, ok := gogen.CheckSigFuncEx(sig); ok {
+					continue
+				}
+			}
 			// At the top level, dedupe by object.
 			if len(cand.path) == 0 {
 				if c.seen[obj] {
