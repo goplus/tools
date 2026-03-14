@@ -1,0 +1,29 @@
+func _() {
+	Demo(100)      //@signature_overload("100", "Demo(n int) int", 1, 0)
+	Demo(100, 200) //@signature_overload("100", "Demo(n1 int, n2 int)", 2, 0)
+	Demo(100, 200) //@signature_overload("200", "Demo(n1 int, n2 int)", 2, 1)
+}
+
+func _() {
+	Demo 100      //@signature_overload("100", "Demo(n int) int", 1, 0)
+	Demo 100, 200 //@signature_overload("100", "Demo(n1 int, n2 int)", 2, 0)
+	Demo 100, 200 //@signature_overload("200", "Demo(n1 int, n2 int)", 2, 1)
+}
+
+func _() {
+	add(100, 200)      //@signature_overload("100", "add(n1 int, n2 int) int", 0, 0)
+	add(100, 200)      //@signature_overload("200", "add(n1 int, n2 int) int", 0, 1)
+	add(100, 200, 300) //@signature_overload("100", "add(n1 float64, n2 float64, n3 float64) float64", 1, 0)
+	add(100, 200, 300) //@signature_overload(", 3", "add(n1 float64, n2 float64, n3 float64) float64", 1, 1)
+	add(100, 200, 300) //@signature_overload(" 3", "add(n1 float64, n2 float64, n3 float64) float64", 1, 2)
+	add(100, 200, 300) //@signature_overload(")", "add(n1 float64, n2 float64, n3 float64) float64", 1, 2)
+}
+
+func _() {
+	add 100, 200      //@signature_overload("100", "add(n1 int, n2 int) int", 0, 0)
+	add 100, 200      //@signature_overload("200", "add(n1 int, n2 int) int", 0, 1)
+	add 100, 200, 300 //@signature_overload("100", "add(n1 float64, n2 float64, n3 float64) float64", 1, 0)
+	add 100, 200, 300 //@signature_overload(", 3", "add(n1 float64, n2 float64, n3 float64) float64", 1, 1)
+	add 100, 200, 300 //@signature_overload(" 3", "add(n1 float64, n2 float64, n3 float64) float64", 1, 2)
+	add 100, 200, 300 //@signature_overload(" //", "add(n1 float64, n2 float64, n3 float64) float64", 1, 2)
+}

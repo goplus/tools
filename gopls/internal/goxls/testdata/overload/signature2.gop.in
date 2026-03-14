@@ -1,0 +1,3 @@
+func _() {
+	Demo //@signature_overload(" //", "Demo()", 0, 0)
+}
